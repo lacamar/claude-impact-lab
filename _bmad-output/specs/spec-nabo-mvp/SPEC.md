@@ -50,6 +50,10 @@ In cities like Oslo, loneliness thrives not from a lack of goodwill, but from th
   - **intent:** Entire state (profiles, contacts, custom intents, scheduled hangouts, ratings, and telemetry logs) persists in browser `localStorage`.
   - **success:** Reloading the browser preserves all changes; clicking "Reset Demo Scenario" cleanly re-seeds default hackathon demo personas (Jonas and Kari).
 
+- **CAP-10: Autonomous Multi-Agent Arrangement Engine (Anti-Chat Friction)**
+  - **intent:** User can trigger autonomous agent-to-agent negotiation that directly absorbs the logistical pain of human back-and-forth messaging ("Group Chat Purgatory").
+  - **success:** The system visually demonstrates the elimination of coordination drag (18 messages/6 days vs 420ms agent handshake), executes multi-step constraint satisfaction (private availability, venue midpoint, transit line), and injects a verified proposal directly into the active schedule with calendar download.
+
 ## Constraints
 
 - Client-side browser execution with zero external server dependencies: ensures 100% demo uptime and resilience during hackathon judging and offline presentations.
