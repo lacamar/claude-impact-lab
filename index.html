@@ -76,6 +76,19 @@
   .next h2 { margin:3px 0 2px; font-size:18px; }
   .next .when { color:var(--muted); font-size:13px; }
   .next .why { margin-top:8px; background:#eef7f1; border-left:4px solid var(--yes); padding:8px 10px; border-radius:8px; font-size:12.5px; line-height:1.4; }
+  .ob { flex:1; display:flex; flex-direction:column; gap:10px; }
+  .ob .bub { background:#fff; border-radius:14px 14px 14px 4px; padding:10px 12px; font-size:14px; line-height:1.4; box-shadow:0 4px 12px rgba(0,0,0,.06); }
+  .ob .bub small { display:block; color:var(--accent); font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; font-weight:700; }
+  .ob .me { align-self:flex-end; background:var(--ink); color:#fff; border-radius:14px 14px 4px 14px; padding:8px 12px; font-size:13px; max-width:90%; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chips button { border:1.5px solid var(--line); background:#fff; border-radius:999px; padding:7px 11px; font-size:13px; cursor:pointer; }
+  .chips button.sel { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .ob .steps { display:flex; gap:4px; justify-content:center; }
+  .ob .steps i { width:18px; height:4px; border-radius:2px; background:var(--line); }
+  .ob .steps i.on { background:var(--accent); }
+  .ob .photo { display:flex; align-items:center; gap:12px; background:#fff; border-radius:14px; padding:12px; }
+  .ob .photo .av { width:56px; height:56px; border-radius:50%; display:grid; place-items:center; font-weight:700; color:#fff; font-size:22px; background:#e8e2d4; }
+  .ob .fine { font-size:12px; color:var(--muted); line-height:1.35; }
   .ledger { max-width:1180px; margin:0 auto 40px; padding:0 20px; }
   .ledger h3 { margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
   .ledger ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
@@ -92,6 +105,7 @@
     <p>Nobody has to ask. Nabo picks people who fit, proposes one thing to all of them the same way, and only says it's on when enough said yes. A no stays private.</p>
   </div>
   <div class="ctl">
+    <button id="btnSkip">Skip onboarding →</button>
     <button id="btnAuto" class="primary">Let the others answer</button>
     <button id="btnAfter" disabled>The morning after →</button>
     <button id="btnReset">Start over</button>
@@ -133,7 +147,10 @@ const SCRIPT = [ {id:'sara', ok:true, t:900}, {id:'erik', ok:false, t:1900}, {id
 let answers = {};
 let isOn = false;
 let isDropped = false;
-let phase = 'ask';          // 'ask' | 'after'
+let phase = 'onboard';      // 'onboard' | 'ask' | 'after'
+const INTERESTS = ['Jazz','Cycling','Cooking','Climbing','Photography','Board games','Running','Film'];
+const EVENINGS = ['Mon eve','Tue eve','Wed eve','Thu eve','Fri eve','Sat day','Sun day'];
+let ob = { step:0, interests:[], evenings:[], photo:false, cal:false };
 let picks = {};             // id -> array of ids they'd like to see again
 let timers = [];
 
@@ -152,6 +169,7 @@ const ledger = document.getElementById('ledger');
 const agentMsg = document.getElementById('agentMsg');
 const btnAfter = document.getElementById('btnAfter');
 const btnAuto = document.getElementById('btnAuto');
+const btnSkip = document.getElementById('btnSkip');
 
 function log(text, hidden=false) {
   const li = document.createElement('li');
@@ -175,7 +193,8 @@ function render() {
     el.className = 'phone' + (p.you ? ' you' : '');
     const a = answers[p.id];
     let body;
-    if (phase === 'after') {
+    if (phase === 'onboard') body = p.you ? onboardScreen(p) : onboardedScreen(p);
+    else if (phase === 'after') {
       if (a !== true) body = notThereScreen(p);
       else if (allPicked()) body = nextScreen(p);
       else if (picks[p.id] !== undefined) body = pickedWaitScreen(p);
@@ -195,12 +214,18 @@ function render() {
   phones.querySelectorAll('button[data-id]').forEach(b => b.onclick = () => decide(b.dataset.id, b.dataset.ok === '1'));
   phones.querySelectorAll('button[data-pick]').forEach(b => b.onclick = () => togglePick(b.dataset.me, b.dataset.pick, b));
   phones.querySelectorAll('button[data-send]').forEach(b => b.onclick = () => sendPicks(b.dataset.send));
+  phones.querySelectorAll('button[data-chip]').forEach(b => b.onclick = () => { const arr = ob[b.dataset.set]; const v = b.dataset.chip; const k = arr.indexOf(v); k >= 0 ? arr.splice(k, 1) : arr.push(v); render(); });
+  phones.querySelectorAll('button[data-ob]').forEach(b => b.onclick = () => obAction(b.dataset.ob));
+
+  btnSkip.disabled = phase !== 'onboard';
+  btnAuto.disabled = phase === 'onboard';
 
   btnAfter.disabled = !(isOn && phase === 'ask');
   btnAuto.textContent = phase === 'after' ? 'Let the others pick' : 'Let the others answer';
 
   const y = yesCount(), n = noCount(), asked = PEOPLE.length - y - n;
-  if (phase === 'after') {
+  if (phase === 'onboard') agentMsg.textContent = `Jonas is new. Four questions before the first proposal. The others answered them weeks ago. It takes a couple of minutes on purpose: people who skip it are the ones who flake.`;
+  else if (phase === 'after') {
     if (allPicked()) {
       const pairs = mutualPairs();
       agentMsg.textContent = pairs.length
@@ -222,12 +247,21 @@ function mutualPairs() {
   return out;
 }
 
+function bitsFor(p) {
+  if (p.you && ob.interests.length) return [p.bits[0], ob.interests.join(', '), ob.evenings.length ? 'Free ' + ob.evenings.slice(0, 3).map(e => e.split(' ')[0]).join(', ') + (ob.evenings.some(e => e.endsWith('eve')) ? ' evenings' : '') : ob.cal ? 'Calendar connected' : p.bits[2]];
+  return p.bits;
+}
+function whyFor(p) {
+  if (p.you && ob.interests.length) return `Three people who like ${ob.interests[0].toLowerCase()} are going, and you said you're free ${ob.evenings.some(e => e.startsWith('Fri')) ? 'Friday evenings' : ob.cal ? 'then, per your calendar' : 'on ' + ob.evenings[0].replace(' eve', ' evenings').replace(' day', 's')}. Nobody organised this; Nabo proposed it to all four of you.`;
+  return p.why;
+}
+
 function cardScreen(p) {
   return `<div class="card">
     <div class="tag">${EVENT.tag}</div>
     <h2>${EVENT.title}</h2>
     <div class="when">${EVENT.when}</div>
-    <div class="why"><small>Why you, ${p.name}</small>${p.why}</div>
+    <div class="why"><small>Why you, ${p.name}</small>${whyFor(p)}</div>
     <div class="count">About 4 people if it happens. You'll see who once it's on.</div>
     <div class="fine">Yes or no, no maybe. If you say no, nobody will know you were asked.</div>
   </div>
@@ -268,9 +302,70 @@ function onScreen(p) {
   return `<div class="on">
     <div class="head"><b>Friday is on 🎷</b><span>${EVENT.when} · ${going.length} of you</span></div>
     <h4>Who's going</h4>
-    ${going.map(q => `<div class="who"><div class="av" style="background:${q.color}">${q.name[0]}</div><div><b>${q.name}${q.id === p.id ? ' (you)' : ''}</b><small>${q.bits.join(' · ')}</small></div></div>`).join('')}
+    ${going.map(q => `<div class="who"><div class="av" style="background:${q.color}">${q.name[0]}</div><div><b>${q.name}${q.id === p.id ? ' (you)' : ''}</b><small>${bitsFor(q).join(' · ')}</small></div></div>`).join('')}
     <div class="fine">Nabo booked a table for ${going.length} and reminds everyone Friday afternoon. Nobody initiated this, so nobody is the host.</div>
   </div>`;
+}
+
+// ---- onboarding ----
+
+function onboardScreen(p) {
+  const steps = `<div class="steps">${[0,1,2,3].map(i => `<i class="${i <= ob.step ? 'on' : ''}"></i>`).join('')}</div>`;
+  if (ob.step === 0) return `<div class="ob">${steps}
+    <div class="bub"><small>Nabo</small>Hi ${p.name}. What are you into? Pick at least two.</div>
+    <div class="chips">${INTERESTS.map(x => `<button data-chip="${x}" data-set="interests" class="${ob.interests.includes(x) ? 'sel' : ''}">${x}</button>`).join('')}</div>
+    <div class="fine">Nabo uses this to pick people who fit you, not to show you ads.</div>
+    <button class="send" data-ob="next" ${ob.interests.length < 2 ? 'disabled' : ''}>Next</button></div>`;
+  if (ob.step === 1) return `<div class="ob">${steps}
+    <div class="me">${ob.interests.join(', ')}</div>
+    <div class="bub"><small>Nabo</small>When are you usually free? Nabo won't propose anything outside these.</div>
+    <div class="chips">${EVENINGS.map(x => `<button data-chip="${x}" data-set="evenings" class="${ob.evenings.includes(x) ? 'sel' : ''}">${x}</button>`).join('')}</div>
+    <div class="chips"><button data-ob="cal" class="${ob.cal ? 'sel' : ''}">${ob.cal ? 'Calendar connected ✓' : 'Or connect your calendar (optional)'}</button></div>
+    <button class="send" data-ob="next" ${ob.evenings.length < 1 && !ob.cal ? 'disabled' : ''}>Next</button></div>`;
+  if (ob.step === 2) return `<div class="ob">${steps}
+    <div class="me">${ob.evenings.length ? ob.evenings.join(', ') : 'Calendar connected'}</div>
+    <div class="bub"><small>Nabo</small>Add a photo. Everyone who goes sees who's coming, so this one is required.</div>
+    <div class="photo"><div class="av" style="${ob.photo ? 'background:' + p.color : ''}">${ob.photo ? p.name[0] : '?'}</div><div style="flex:1"><button data-ob="photo" class="send" style="height:40px;width:100%;margin:0">${ob.photo ? 'Looks good ✓' : 'Use a photo'}</button></div></div>
+    <div class="fine">No photo, no proposals. That keeps out people who hide and don't show up.</div>
+    <button class="send" data-ob="next" ${!ob.photo ? 'disabled' : ''}>Next</button></div>`;
+  if (ob.step === 3) return `<div class="ob">${steps}
+    <div class="bub"><small>Nabo</small>Last one. Nabo will propose things to you and to people who fit. You never have to ask anyone. You only answer yes or no, and a no stays private.</div>
+    <div class="bub">One more thing: if you say yes and don't show up, Nabo pauses you. Fair?</div>
+    <button class="send" data-ob="done">Fair. I'm open to suggestions</button></div>`;
+  return `<div class="state"><div class="dot wait"></div>
+    <h3>You're in</h3>
+    <p>Nabo is looking for people who fit. First proposal within a few days, usually sooner.</p></div>`;
+}
+
+function onboardedScreen(p) {
+  return `<div class="on">
+    <h4>Already on Nabo</h4>
+    <div class="who"><div class="av" style="background:${p.color}">${p.name[0]}</div><div><b>${p.name}</b><small>${p.bits.join(' · ')}</small></div></div>
+    <div class="state" style="flex:1"><div class="dot wait"></div><h3>Nothing yet this week</h3><p>${p.name} answered the same four questions a while ago. Waiting for Nabo's next proposal.</p></div>
+  </div>`;
+}
+
+function obAction(a) {
+  if (a === 'next') ob.step++;
+  if (a === 'cal') ob.cal = !ob.cal;
+  if (a === 'photo') ob.photo = true;
+  if (a === 'done') { ob.step = 4; log(`${PEOPLE[0].name} onboarded: ${ob.interests.join(', ')}; free ${ob.evenings.join(', ') || 'per calendar'}; photo added.`, true); timers.push(setTimeout(startAsk, 1400)); }
+  render();
+}
+
+function startAsk() {
+  if (phase !== 'onboard') return;
+  phase = 'ask';
+  log('Proposed "Live jazz, then a drink, Fri 20:00" to Jonas, Sara, Erik and Amina. Same message to each, nobody named as the initiator.');
+  render();
+}
+
+function skipOnboarding() {
+  if (phase !== 'onboard') return;
+  if (!ob.interests.length) ob.interests = ['Jazz', 'Cycling', 'Cooking'];
+  if (!ob.evenings.length) ob.evenings = ['Thu eve', 'Fri eve', 'Sat day'];
+  ob.photo = true; ob.step = 4;
+  startAsk();
 }
 
 // ---- the morning after ----
@@ -380,13 +475,15 @@ function auto() {
 
 function reset() {
   timers.forEach(clearTimeout); timers = [];
-  answers = {}; isOn = false; isDropped = false; phase = 'ask'; picks = {}; ledger.innerHTML = '';
-  log('Proposed "Live jazz, then a drink, Fri 20:00" to Jonas, Sara, Erik and Amina. Same message to each, nobody named as the initiator.');
+  answers = {}; isOn = false; isDropped = false; phase = 'onboard'; picks = {}; ledger.innerHTML = '';
+  ob = { step:0, interests:[], evenings:[], photo:false, cal:false };
+  log('Jonas signed up. Four questions before anything is proposed.');
   render();
 }
 
 btnAuto.onclick = auto;
 btnAfter.onclick = morningAfter;
+btnSkip.onclick = skipOnboarding;
 document.getElementById('btnReset').onclick = reset;
 reset();
 </script>
