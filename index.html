@@ -3,152 +3,1371 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nabo — activities that ask you</title>
+<title>Nabo — The Autonomous Social Initiation Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#f4f1ea; --card:#fff; --ink:#1c1b18; --muted:#6b675e; --yes:#2e8b57; --no:#c0392b; --accent:#d97706; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; display:flex; flex-direction:column; align-items:center; }
-  header { width:100%; max-width:420px; padding:20px 20px 0; }
-  header h1 { margin:0; font-size:22px; }
-  header p { margin:4px 0 0; color:var(--muted); font-size:14px; }
-  .who { display:flex; gap:8px; align-items:center; margin-top:12px; font-size:13px; color:var(--muted); }
-  .who b { color:var(--ink); }
-  .stack { position:relative; width:360px; height:470px; margin:20px 0 8px; }
-  .card { position:absolute; inset:0; background:var(--card); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.12); padding:22px; display:flex; flex-direction:column; transition:transform .35s ease, opacity .35s ease; user-select:none; touch-action:none; }
-  .card .tag { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); font-weight:600; }
-  .card h2 { margin:8px 0 4px; font-size:26px; line-height:1.15; }
-  .card .when { color:var(--muted); font-size:15px; }
-  .card .why { margin-top:auto; background:#fff7e6; border-left:4px solid var(--accent); padding:12px 14px; border-radius:8px; font-size:15px; line-height:1.4; }
-  .card .why small { display:block; color:var(--muted); margin-bottom:4px; font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
-  .card .people { display:flex; gap:6px; margin-top:14px; align-items:center; font-size:14px; color:var(--muted); }
-  .card .people span { width:30px; height:30px; border-radius:50%; background:#e8e2d4; display:grid; place-items:center; font-weight:600; color:var(--ink); font-size:13px; }
-  .card.out-right { transform:translateX(130%) rotate(12deg); opacity:0; }
-  .card.out-left { transform:translateX(-130%) rotate(-12deg); opacity:0; }
-  .stamp { position:absolute; top:24px; font-size:28px; font-weight:800; padding:4px 12px; border:4px solid; border-radius:8px; opacity:0; transform:rotate(-15deg); pointer-events:none; }
-  .stamp.yes { right:24px; color:var(--yes); border-color:var(--yes); }
-  .stamp.no { left:24px; color:var(--no); border-color:var(--no); transform:rotate(15deg); }
-  .actions { display:flex; gap:20px; margin:8px 0 16px; }
-  .actions button { width:64px; height:64px; border-radius:50%; border:0; font-size:28px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.12); background:#fff; }
-  .actions .no { color:var(--no); } .actions .yes { color:var(--yes); }
-  .hint { color:var(--muted); font-size:13px; margin-bottom:18px; }
-  .week { width:100%; max-width:420px; padding:0 20px 30px; }
-  .week h3 { margin:0 0 8px; font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
-  .week ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
-  .week li { background:#fff; border-radius:10px; padding:10px 12px; font-size:14px; display:flex; justify-content:space-between; border-left:4px solid var(--yes); }
-  .week li span { color:var(--muted); }
-  .week .empty { color:var(--muted); font-size:14px; }
-  .toast { position:fixed; left:50%; bottom:28px; transform:translate(-50%, 20px); background:var(--ink); color:#fff; padding:10px 16px; border-radius:999px; font-size:14px; opacity:0; transition:all .25s; pointer-events:none; }
-  .toast.show { opacity:1; transform:translate(-50%, 0); }
-  .done { text-align:center; padding:40px 24px; }
-  .done h2 { margin:0 0 8px; }
+  :root {
+    --bg-warm: #f7f5ef;
+    --surface: #ffffff;
+    --surface-glass: rgba(255, 255, 255, 0.85);
+    --border: #e6e2d8;
+    --ink: #18181b;
+    --ink-light: #52525b;
+    --ink-faint: #a1a1aa;
+    --accent: #d97706;
+    --accent-soft: #fef3c7;
+    --accent-hover: #b45309;
+    --success: #059669;
+    --success-soft: #d1fae5;
+    --danger: #dc2626;
+    --danger-soft: #fee2e2;
+    --console-bg: #0f172a;
+    --console-border: #1e293b;
+    --console-text: #e2e8f0;
+    --console-muted: #64748b;
+    --console-cyan: #38bdf8;
+    --console-green: #4ade80;
+    --radius-lg: 24px;
+    --radius-md: 14px;
+    --radius-sm: 8px;
+    --shadow-card: 0 16px 36px -12px rgba(28, 25, 23, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    --shadow-float: 0 20px 45px -10px rgba(0, 0, 0, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-warm);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* Top Navigation & Hackathon Banner */
+  .top-bar {
+    width: 100%;
+    padding: 12px 24px;
+    background: var(--surface-glass);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #d97706, #f59e0b);
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 17px;
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+  }
+  .brand-name {
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+  }
+  .brand-tagline {
+    font-size: 13px;
+    color: var(--ink-light);
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .brand-tagline { display: inline-block; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--border); }
+  }
+
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .persona-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .persona-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-light);
+    transition: all 0.2s ease;
+  }
+  .persona-btn.active {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  /* Main Split Layout */
+  .main-stage {
+    display: flex;
+    flex: 1;
+    max-width: 1380px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px;
+    gap: 32px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  @media (max-width: 1024px) {
+    .main-stage {
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+  }
+
+  /* Phone Mockup Frame */
+  .phone-container {
+    width: 100%;
+    max-width: 430px;
+    flex-shrink: 0;
+  }
+
+  .phone-frame {
+    background: #000;
+    border-radius: 46px;
+    padding: 12px;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+  }
+
+  .phone-screen {
+    background: var(--surface);
+    border-radius: 36px;
+    overflow: hidden;
+    min-height: 780px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* Dynamic Island Header */
+  .dynamic-island {
+    width: 120px;
+    height: 28px;
+    background: #000;
+    border-radius: 20px;
+    margin: 8px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .island-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  .app-header {
+    padding: 16px 20px 10px;
+  }
+  .app-header h1 {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .app-sub {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* Persona Context Bar inside App */
+  .user-context-pill {
+    margin: 12px 20px 0;
+    background: var(--bg-warm);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+  .context-title {
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .context-sub {
+    color: var(--ink-light);
+    font-size: 11px;
+  }
+
+  /* App Tabs */
+  .tab-nav {
+    display: flex;
+    gap: 6px;
+    padding: 10px 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 4px;
+    background: none;
+    border: none;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ink-light);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .tab-btn.active {
+    color: var(--accent);
+  }
+  .tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 10%;
+    width: 80%;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .tab-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px 24px;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  /* Card Stack View */
+  .card-stack {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    margin: 6px 0 14px;
+  }
+
+  .proposal-card {
+    position: absolute;
+    inset: 0;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    touch-action: none;
+    transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    cursor: grab;
+  }
+  .proposal-card:active { cursor: grabbing; }
+
+  .proposal-card.swipe-left {
+    transform: translateX(-150%) rotate(-18deg) !important;
+    opacity: 0 !important;
+  }
+  .proposal-card.swipe-right {
+    transform: translateX(150%) rotate(18deg) !important;
+    opacity: 0 !important;
+  }
+
+  .badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .tag-pill {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .tag-pill.match { background: #fef3c7; color: #b45309; }
+  .tag-pill.org { background: #e0e7ff; color: #4338ca; }
+  .tag-pill.buddy { background: #d1fae5; color: #047857; }
+
+  .safe-rejection-badge {
+    font-size: 11px;
+    color: var(--success);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .proposal-title {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.18;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .proposal-meta {
+    font-size: 14px;
+    color: var(--ink-light);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  /* The "Why You" attribution box */
+  .why-box {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: #78350f;
+    margin-bottom: 14px;
+  }
+  .why-header {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Attendees and "Go as two" option */
+  .attendees-row {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+  .avatar-group {
+    display: flex;
+    align-items: center;
+  }
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    border: 2px solid #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--ink);
+    margin-left: -8px;
+  }
+  .avatar:first-child { margin-left: 0; }
+  .avatar.add { background: #fef3c7; color: var(--accent); font-size: 14px; }
+  .attendees-text {
+    font-size: 12px;
+    color: var(--ink-light);
+    font-weight: 500;
+    margin-left: 8px;
+  }
+
+  .stamp {
+    position: absolute;
+    top: 24px;
+    font-size: 26px;
+    font-weight: 900;
+    padding: 6px 16px;
+    border: 4px solid;
+    border-radius: 12px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .stamp.yes { right: 20px; color: var(--success); border-color: var(--success); transform: rotate(12deg); }
+  .stamp.no { left: 20px; color: var(--danger); border-color: var(--danger); transform: rotate(-12deg); }
+
+  /* Action Buttons below Stack */
+  .action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 8px;
+  }
+  .circle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .circle-btn:hover {
+    transform: scale(1.08);
+  }
+  .circle-btn:active {
+    transform: scale(0.95);
+  }
+  .circle-btn.no { color: var(--danger); }
+  .circle-btn.no:hover { background: var(--danger-soft); border-color: var(--danger); }
+  .circle-btn.yes { color: var(--success); }
+  .circle-btn.yes:hover { background: var(--success-soft); border-color: var(--success); }
+
+  .buddy-action-btn {
+    background: var(--bg-warm);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-light);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .buddy-action-btn:hover {
+    background: #fff;
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .swipe-hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 10px;
+  }
+
+  /* Empty / Done View */
+  .done-state {
+    text-align: center;
+    padding: 40px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  .done-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--success-soft);
+    color: var(--success);
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    margin-bottom: 16px;
+  }
+  .done-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .done-desc {
+    font-size: 13.5px;
+    color: var(--ink-light);
+    line-height: 1.5;
+    max-width: 280px;
+  }
+
+  /* Calendar / Schedule Tab */
+  .schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .schedule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--success);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    position: relative;
+  }
+  .schedule-time {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--success);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .schedule-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 4px 0;
+  }
+  .schedule-loc {
+    font-size: 13px;
+    color: var(--ink-light);
+  }
+  .schedule-tag {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 11px;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--ink-light);
+  }
+
+  /* Past / Recurrence Feedback Tab */
+  .feedback-header {
+    margin-bottom: 14px;
+  }
+  .feedback-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .feedback-sub {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-top: 2px;
+  }
+  .past-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .past-attendees-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .person-rating {
+    background: var(--bg-warm);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .person-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .person-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .like-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .like-btn.liked {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #b45309;
+  }
+
+  /* Toast Notification */
+  .toast {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 200;
+    white-space: nowrap;
+    max-width: 90%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* RIGHT COLUMN: Live Agent Telemetry Console */
+  .agent-console-container {
+    flex: 1;
+    min-width: 380px;
+    background: var(--console-bg);
+    border: 1px solid var(--console-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 780px;
+    color: var(--console-text);
+  }
+
+  .console-top {
+    padding: 14px 18px;
+    background: #1e293b;
+    border-bottom: 1px solid var(--console-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .console-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .console-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--console-green);
+    box-shadow: 0 0 10px var(--console-green);
+  }
+  .console-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--console-muted);
+  }
+
+  .console-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--console-border);
+    background: #0b1120;
+  }
+  .stat-box {
+    padding: 12px 16px;
+    border-right: 1px solid var(--console-border);
+  }
+  .stat-box:last-child { border-right: none; }
+  .stat-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--console-cyan);
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--console-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+
+  .console-stream {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .log-entry {
+    border-left: 2px solid #334155;
+    padding-left: 10px;
+    transition: all 0.2s ease;
+  }
+  .log-entry.active {
+    border-left-color: var(--console-cyan);
+    background: rgba(56, 189, 248, 0.05);
+  }
+  .log-entry.success {
+    border-left-color: var(--console-green);
+  }
+  .log-entry.private {
+    border-left-color: #a855f7;
+  }
+  .log-time {
+    color: var(--console-muted);
+    font-size: 10.5px;
+    margin-right: 6px;
+  }
+  .log-tag {
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    margin-right: 6px;
+  }
+  .tag-ai { background: rgba(56, 189, 248, 0.2); color: var(--console-cyan); }
+  .tag-match { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+  .tag-coord { background: rgba(74, 222, 128, 0.2); color: var(--console-green); }
+  .tag-shield { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+  /* Pitch Summary Banner at Footer */
+  .pitch-banner {
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    margin-top: auto;
+    font-size: 13px;
+    color: var(--ink-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .pitch-badge {
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--ink);
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Nabo</h1>
-  <p>You said "sometime" to people. Nabo does the asking, finds the time, and only tells you when it's a yes on both sides.</p>
-  <div class="who">You: <b>Jonas</b> · "sometime" with Mia, Erik, Amina, the Sunday riders · free Thu eve, Sat afternoon</div>
-</header>
 
-<div class="stack" id="stack"></div>
+<!-- Top Navigation -->
+<nav class="top-bar">
+  <div class="brand">
+    <div class="brand-logo">N</div>
+    <div>
+      <div class="brand-name">Nabo</div>
+    </div>
+    <span class="brand-tagline">The Autonomous Initiation Agent · Claude Impact Lab Oslo</span>
+  </div>
 
-<div class="actions">
-  <button class="no" id="btnNo" aria-label="No">✕</button>
-  <button class="yes" id="btnYes" aria-label="Yes">✓</button>
-</div>
-<div class="hint">Drag the card, press ← / →, or tap the buttons</div>
-<div class="toast" id="toast"></div>
+  <div class="nav-controls">
+    <div class="persona-badge">
+      <span>Perspective:</span>
+      <button class="persona-btn active" id="btnPersonaJonas" onclick="switchPersona('jonas')">Jonas (Newcomer)</button>
+      <button class="persona-btn" id="btnPersonaKari" onclick="switchPersona('kari')">Kari (Organizer)</button>
+    </div>
+  </div>
+</nav>
 
-<section class="week">
-  <h3>Your week</h3>
-  <ul id="week"><li class="empty">Nothing yet. Say yes to something.</li></ul>
-</section>
+<!-- Main Stage Split View -->
+<main class="main-stage">
+  
+  <!-- Left Side: Interactive Phone Preview -->
+  <div class="phone-container">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        
+        <!-- Dynamic Island status -->
+        <div class="dynamic-island">
+          <div class="island-dot"></div>
+          <span>Nabo Agent Active</span>
+        </div>
+
+        <div class="app-header">
+          <h1 id="appHeaderTitle">Hey Jonas</h1>
+          <p class="app-sub" id="appHeaderSub">Nabo handled the awkward "coffee sometime" coordination. Here are 5 invitations waiting for your nod.</p>
+        </div>
+
+        <!-- User Context Pill -->
+        <div class="user-context-pill">
+          <div>
+            <div class="context-title" id="contextName">Jonas · New in Grünerløkka</div>
+            <div class="context-sub" id="contextDetails">Free Thu eve, Sat afternoon · Jazz, Dogs, Cycling</div>
+          </div>
+          <span style="font-size:18px">📍</span>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-nav">
+          <button class="tab-btn active" id="tabProposals" onclick="switchTab('proposals')">Proposals <span id="propCountBadge">(5)</span></button>
+          <button class="tab-btn" id="tabSchedule" onclick="switchTab('schedule')">Your Week <span id="scheduleCountBadge">(0)</span></button>
+          <button class="tab-btn" id="tabRecurrence" onclick="switchTab('recurrence')">Recurrence Loop</button>
+        </div>
+
+        <!-- Tab 1: Proposals Card Deck -->
+        <div class="tab-content" id="viewProposals">
+          <div class="card-stack" id="stack">
+            <!-- Dynamic Cards injected here -->
+          </div>
+
+          <div class="action-bar" id="actionBar">
+            <button class="circle-btn no" id="btnNo" title="Decline Privately (✕)" aria-label="Decline">✕</button>
+            <button class="buddy-action-btn" id="btnBuddy" onclick="handleBuddyPrompt()">
+              <span>👥</span> Go as two
+            </button>
+            <button class="circle-btn yes" id="btnYes" title="Accept Proposal (✓)" aria-label="Accept">✓</button>
+          </div>
+          <div class="swipe-hint">Drag card, press ← / →, or tap buttons. Declining is 100% private.</div>
+        </div>
+
+        <!-- Tab 2: Your Week Schedule -->
+        <div class="tab-content" id="viewSchedule" style="display:none;">
+          <div class="schedule-list" id="scheduleList">
+            <div class="done-state">
+              <div class="done-icon">📅</div>
+              <div class="done-title">No confirmed hangouts yet</div>
+              <div class="done-desc">Say "Yes" to proposals or pair up on a community activity to build your week without awkward texting.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Post-Event Recurrence Loop -->
+        <div class="tab-content" id="viewRecurrence" style="display:none;">
+          <div class="feedback-header">
+            <div class="feedback-title">Past Hangout Feedback</div>
+            <div class="feedback-sub">Nabo asks: Who did you click with? Mutual thumbs-up triggers repeat low-pressure hangouts. Completely anonymous.</div>
+          </div>
+
+          <div class="past-card">
+            <div class="schedule-time" style="color:var(--ink-light)">Completed · Tuesday 18:00</div>
+            <div class="schedule-title">Coffee at Tim Wendelboe</div>
+            <div class="schedule-loc">Grünerløkka · 3 attendees</div>
+
+            <div class="past-attendees-grid">
+              <div class="person-rating">
+                <div class="person-info">
+                  <div class="person-avatar">M</div>
+                  <span>Mia K.</span>
+                </div>
+                <button class="like-btn" id="likeMia" onclick="toggleAffinity('Mia K.', this)">👍 See again</button>
+              </div>
+              <div class="person-rating">
+                <div class="person-info">
+                  <div class="person-avatar">L</div>
+                  <span>Lars T.</span>
+                </div>
+                <button class="like-btn" id="likeLars" onclick="toggleAffinity('Lars T.', this)">👍 See again</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="past-card" style="margin-top:12px;">
+            <div class="schedule-time" style="color:var(--ink-light)">Completed · Last Saturday</div>
+            <div class="schedule-title">Maridalen Autumn Cycling</div>
+            <div class="schedule-loc">Maridalen · 4 attendees</div>
+            <div class="past-attendees-grid">
+              <div class="person-rating">
+                <div class="person-info">
+                  <div class="person-avatar">E</div>
+                  <span>Erik S.</span>
+                </div>
+                <button class="like-btn liked" onclick="toggleAffinity('Erik S.', this)">❤️ Matched</button>
+              </div>
+              <div class="person-rating">
+                <div class="person-info">
+                  <div class="person-avatar">P</div>
+                  <span>Per O.</span>
+                </div>
+                <button class="like-btn" onclick="toggleAffinity('Per O.', this)">👍 See again</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Toast -->
+        <div class="toast" id="toast"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Live Autonomous Agent Operations Console -->
+  <div class="agent-console-container">
+    <div class="console-top">
+      <div class="console-status">
+        <div class="console-pulse"></div>
+        <span>NABO AGENT REASONING ENGINE</span>
+      </div>
+      <div class="console-title">v2.4 · LIVE TELEMETRY</div>
+    </div>
+
+    <!-- Agent Activity KPIs -->
+    <div class="console-stats">
+      <div class="stat-box">
+        <div class="stat-val" id="statInitiations">14</div>
+        <div class="stat-lbl">Coord. Initiated</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statSocialShield">100%</div>
+        <div class="stat-lbl">Zero Rejection Risk</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statMatches">4 Confirmed</div>
+        <div class="stat-lbl">Double Opt-Ins</div>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Stream -->
+    <div class="console-stream" id="consoleStream">
+      <!-- Agent entries streamed here -->
+    </div>
+  </div>
+
+</main>
+
+<!-- Footer Pitch Summary -->
+<footer class="pitch-banner">
+  <div>
+    <strong>Claude Impact Lab Oslo:</strong> Team Nabo — <em>"Lowering the cost of initiation. People give up on coordination before they give up on each other."</em>
+  </div>
+  <div style="display:flex; gap:10px;">
+    <span class="pitch-badge">Presentation at 13:15</span>
+    <span class="pitch-badge" style="background:var(--success-soft); color:var(--success);">Demo Ready</span>
+  </div>
+</footer>
 
 <script>
-const me = { name:'Jonas', interests:['jazz','dogs','cycling'] };
+// Data store for personas and proposals
+const personas = {
+  jonas: {
+    name: 'Jonas',
+    role: 'Newcomer to Oslo',
+    bio: 'Jonas · New in Grünerløkka',
+    details: 'Free Thu eve, Sat afternoon · Jazz, Dogs, Cycling',
+    sub: 'Nabo handled the awkward "coffee sometime" coordination. Here are 5 invitations waiting for your nod.',
+    proposals: [
+      {
+        id: 'prop-1',
+        tag: 'Mutual Coffee Promise',
+        tagClass: 'match',
+        title: 'Coffee with Mia',
+        when: 'Thu 17:30 · Tim Wendelboe',
+        why: 'You both said "coffee sometime" at the meetup 3 weeks ago. Nabo checked Mia\'s calendar, she agreed to Thursday 17:30. Nabo asks you now. If you decline, she will never know you were asked.',
+        attendees: ['M'],
+        attendeeNames: ['Mia K.'],
+        isOrg: false,
+        canBuddy: false
+      },
+      {
+        id: 'prop-2',
+        tag: 'Live Music Buddy',
+        tagClass: 'match',
+        title: 'Jazz at Blå with Erik',
+        when: 'Thu 20:00 · Blå (Brenneriveien)',
+        why: 'Erik mentioned Blå at work. You both have jazz tagged. Nabo confirmed Erik is free and reserved a table. A single tap confirms.',
+        attendees: ['E'],
+        attendeeNames: ['Erik S.'],
+        isOrg: false,
+        canBuddy: false
+      },
+      {
+        id: 'prop-3',
+        tag: 'Community Request · Low Pressure',
+        tagClass: 'org',
+        title: 'Move a Piano, then Waffles',
+        when: 'Sat 14:00 · Sofienberg Music School',
+        why: 'Kari needs 4 volunteers for 45 mins. 3 have accepted. You mentioned wanting to meet neighbours while doing something useful. Free waffles after.',
+        attendees: ['K', 'A', 'T'],
+        attendeeNames: ['Kari (Host)', 'Amina', 'Tor'],
+        isOrg: true,
+        canBuddy: true
+      },
+      {
+        id: 'prop-4',
+        tag: 'Recurrence Signal',
+        tagClass: 'buddy',
+        title: 'Walk Shelter Dogs with Mia',
+        when: 'Sat 11:00 · Dyrebeskyttelsen Oslo',
+        why: 'You both gave mutual positive feedback after coffee, and both love dogs. Nabo proposes this low-pressure second meetup so nobody had to build courage to ask.',
+        attendees: ['M'],
+        attendeeNames: ['Mia K.'],
+        isOrg: false,
+        canBuddy: true
+      },
+      {
+        id: 'prop-5',
+        tag: 'Group Hangout',
+        tagClass: 'match',
+        title: 'Sunday Gravel Ride to Maridalen',
+        when: 'Sun 10:00 · 32 km, easy pace',
+        why: 'Per and Lina said "join our Sunday ride sometime". Nabo matched the first weekend where weather is dry and all 3 are free.',
+        attendees: ['P', 'L'],
+        attendeeNames: ['Per', 'Lina'],
+        isOrg: false,
+        canBuddy: true
+      }
+    ]
+  },
+  kari: {
+    name: 'Kari',
+    role: 'Community Organizer',
+    bio: 'Kari · Sofienberg Volunteer Lead',
+    details: 'Coordinating music school & neighborhood repairs',
+    sub: 'Nabo dispatched volunteer needs without broadcast spam. View responses and matched buddies.',
+    proposals: [
+      {
+        id: 'kari-1',
+        tag: 'Volunteer Match Found',
+        tagClass: 'org',
+        title: 'Piano Moving Crew',
+        when: 'Sat 14:00 · Sofienberg Music School',
+        why: 'Nabo reached out to 6 neighbors with high physical fitness and free Saturday afternoons. Jonas, Amina, and Tor accepted privately.',
+        attendees: ['J', 'A', 'T'],
+        attendeeNames: ['Jonas', 'Amina', 'Tor'],
+        isOrg: true,
+        canBuddy: false
+      },
+      {
+        id: 'kari-2',
+        tag: 'Youth Mentoring',
+        tagClass: 'match',
+        title: 'Coding Workshop Assistant',
+        when: 'Next Tue 16:30 · Deichman Grünerløkka',
+        why: 'Nabo matched 2 local software developers who indicated an interest in volunteering with kids. Both opted in.',
+        attendees: ['S', 'M'],
+        attendeeNames: ['Sofia', 'Morten'],
+        isOrg: true,
+        canBuddy: true
+      }
+    ]
+  }
+};
 
-const proposals = [
-  { tag:'Mia said yes', title:'Coffee with Mia', when:'Thu 17:30 · Tim Wendelboe', why:'You both said "coffee sometime" three weeks ago. Nabo asked Mia first. She said yes to Thursday. You never had to.', people:['M'] },
-  { tag:'Erik said yes', title:'Jazz at Blå with Erik', when:'Thu 20:00 · after coffee, 12 min walk', why:'Erik mentioned Blå at the office party. He\'s in for Thursday. If you say no, he won\'t know you were asked.', people:['E'] },
-  { tag:'2 of 3 said yes', title:'Sunday ride to Maridalen', when:'Sun 10:00 · 35 km, easy pace', why:'Per and Lina from the bike shop said "join us sometime". Nabo picked the first Sunday all of you are free.', people:['P','L','N'] },
-  { tag:'Amina said yes', title:'Lunch with Amina', when:'Wed 12:00 · near both your offices', why:'You exchanged numbers at the meetup in August and never wrote. Nabo wrote for you. Lunch, not coffee, because Wednesday is her short day.', people:['A'] },
-  { tag:'Kari needs 4', title:'Move a piano, then waffles', when:'Sat 14:00 · Sofienberg music school', why:'Kari asked Nabo for four people instead of asking neighbours one by one. Three said yes. You\'re free Saturday afternoon.', people:['K','A','T'] },
-  { tag:'Nabo\'s idea', title:'Walk a shelter dog with Mia', when:'Sat 11:00 · Dyrebeskyttelsen Oslo', why:'You both like dogs and both said yes to Thursday. Nabo suggests a second one before you have to.', people:['M'] },
+let currentPersona = 'jonas';
+let activeProposals = [...personas.jonas.proposals];
+let confirmedSchedule = [];
+let currentIndex = 0;
+
+const stackEl = document.getElementById('stack');
+const consoleStreamEl = document.getElementById('consoleStream');
+const scheduleListEl = document.getElementById('scheduleList');
+const toastEl = document.getElementById('toast');
+
+// Telemetry initial logs
+const initialLogs = [
+  { tag: 'AI CORE', tagClass: 'tag-ai', text: 'Nabo Agent Daemon initialized. Monitoring informal intent triggers.' },
+  { tag: 'INTENT', tagClass: 'tag-match', text: 'Ingested note from Jonas: "Grab coffee sometime with Mia" (Confidence: 0.94)' },
+  { tag: 'OUTREACH', tagClass: 'tag-coord', text: 'Autonomous ping dispatched to Mia\'s Nabo Agent. Proposing Thursday 17:30.' },
+  { tag: 'CONFIRM', tagClass: 'tag-coord', text: 'Mia\'s agent returned: OPT-IN [Thu 17:30, Tim Wendelboe].' },
+  { tag: 'SHIELD', tagClass: 'tag-shield', text: 'Social Shield Active: Jonas can decline with zero disclosure to Mia.' },
+  { tag: 'ORG DEMAND', tagClass: 'tag-match', text: 'Sofienberg Music School requested 4 piano movers. Querying local proximity pool.' }
 ];
 
-const stack = document.getElementById('stack');
-const week = document.getElementById('week');
-const yes = [];
-let i = 0;
+function logAgent(tag, tagClass, text, isSpecial = false) {
+  const d = new Date();
+  const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
+  
+  const entry = document.createElement('div');
+  entry.className = `log-entry ${isSpecial ? 'active' : ''}`;
+  entry.innerHTML = `<span class="log-time">${time}</span><span class="log-tag ${tagClass}">${tag}</span><span>${text}</span>`;
+  consoleStreamEl.appendChild(entry);
+  consoleStreamEl.scrollTop = consoleStreamEl.scrollHeight;
+}
 
-function render() {
-  stack.innerHTML = '';
-  if (i >= proposals.length) {
-    stack.innerHTML = `<div class="card done"><h2>That's all for this week</h2><p>You said yes to ${yes.length}. Nabo confirms with them and reminds you both the morning of. The ${proposals.length - yes.length} you passed on will never know they were asked. Nothing to write, nothing to chase.</p></div>`;
+function renderConsole() {
+  consoleStreamEl.innerHTML = '';
+  initialLogs.forEach(l => logAgent(l.tag, l.tagClass, l.text));
+}
+
+function renderCards() {
+  stackEl.innerHTML = '';
+  const remaining = activeProposals.length - currentIndex;
+  document.getElementById('propCountBadge').textContent = `(${remaining})`;
+
+  if (currentIndex >= activeProposals.length) {
+    stackEl.innerHTML = `
+      <div class="done-state">
+        <div class="done-icon">✨</div>
+        <div class="done-title">All proposals handled!</div>
+        <div class="done-desc">Nabo has locked in your schedule. Your contacts will only know about the events you said YES to. Zero awkwardness.</div>
+      </div>
+    `;
+    document.getElementById('actionBar').style.display = 'none';
     return;
   }
-  [i + 1, i].forEach(k => {
-    const p = proposals[k]; if (!p) return;
-    const el = document.createElement('div');
-    el.className = 'card';
-    if (k === i + 1) el.style.transform = 'scale(.95) translateY(12px)';
-    el.innerHTML = `
-      <div class="tag">${p.tag}</div>
-      <h2>${p.title}</h2>
-      <div class="when">${p.when}</div>
-      <div class="why"><small>Why you</small>${p.why}</div>
-      <div class="people">${p.people.map(x => `<span>${x}</span>`).join('')} going</div>
-      <div class="stamp yes">YES</div><div class="stamp no">NOPE</div>`;
-    stack.appendChild(el);
-    if (k === i) drag(el);
+
+  document.getElementById('actionBar').style.display = 'flex';
+
+  // Render top 2 cards for 3D stack effect
+  const cardIndices = [currentIndex + 1, currentIndex];
+  cardIndices.forEach(idx => {
+    if (idx >= activeProposals.length) return;
+    const p = activeProposals[idx];
+    const isTop = (idx === currentIndex);
+
+    const card = document.createElement('div');
+    card.className = 'proposal-card';
+    card.id = `card-${p.id}`;
+    if (!isTop) {
+      card.style.transform = 'scale(0.95) translateY(14px)';
+      card.style.opacity = '0.6';
+    }
+
+    card.innerHTML = `
+      <div class="badge-row">
+        <span class="tag-pill ${p.tagClass}">${p.tag}</span>
+        <span class="safe-rejection-badge">🛡️ Private Decline</span>
+      </div>
+      <div class="proposal-title">${p.title}</div>
+      <div class="proposal-meta">
+        <span>🕒 ${p.when}</span>
+      </div>
+      <div class="why-box">
+        <div class="why-header"><span>💡</span> Why Nabo proposed this</div>
+        ${p.why}
+      </div>
+      <div class="attendees-row">
+        <div style="display:flex; align-items:center;">
+          <div class="avatar-group">
+            ${p.attendees.map(a => `<div class="avatar">${a}</div>`).join('')}
+          </div>
+          <div class="attendees-text">${p.attendeeNames.join(', ')}</div>
+        </div>
+        ${p.canBuddy ? '<span style="font-size:11px; color:var(--accent); font-weight:700;">+ "Go as two" eligible</span>' : ''}
+      </div>
+      <div class="stamp yes">I\'M IN!</div>
+      <div class="stamp no">PASS</div>
+    `;
+
+    stackEl.appendChild(card);
+    if (isTop) setupDrag(card);
   });
 }
 
-function decide(ok) {
-  const top = stack.lastElementChild;
-  if (!top || i >= proposals.length) return;
-  top.classList.add(ok ? 'out-right' : 'out-left');
-  if (ok) {
-    yes.push(proposals[i]);
-    week.innerHTML = yes.map(p => `<li>${p.title}<span>${p.when.split(' · ')[0]}</span></li>`).join('');
-    toast(`Nabo tells ${proposals[i].people.length > 1 ? 'them' : proposals[i].title.split(' with ')[1] || 'them'} you're in. Reminder the morning of.`);
-  } else {
-    toast('No worries. They won\'t know you were asked.');
+function handleDecision(accept, withBuddy = false) {
+  if (currentIndex >= activeProposals.length) return;
+  const current = activeProposals[currentIndex];
+  const cardEl = document.getElementById(`card-${current.id}`);
+
+  if (cardEl) {
+    cardEl.classList.add(accept ? 'swipe-right' : 'swipe-left');
   }
-  i++;
-  setTimeout(render, 300);
+
+  if (accept) {
+    confirmedSchedule.push({
+      ...current,
+      pairedBuddy: withBuddy ? 'Amina (Newcomer Buddy)' : null
+    });
+    updateScheduleUI();
+    showToast(`✓ Confirmed! Nabo notifies ${current.attendeeNames[0]}. Calendar updated.`);
+    logAgent('CONFIRMED', 'tag-coord', `Jonas accepted "${current.title}". Mutual handshake complete. Adding to calendar.`);
+    if (withBuddy) {
+      logAgent('BUDDY PAIRED', 'tag-shield', `Jonas requested "Go as two". Paired with Amina to reduce arrival anxiety.`);
+    }
+  } else {
+    showToast(`🛡️ Declined privately. ${current.attendeeNames[0]} will never know.`);
+    logAgent('DISCREET REJECT', 'tag-shield', `Jonas declined "${current.title}". Suppression rule applied. Zero notification sent.`);
+  }
+
+  currentIndex++;
+  setTimeout(renderCards, 320);
 }
 
-function drag(el) {
-  let x0 = null, dx = 0;
-  const y = el.querySelector('.stamp.yes'), n = el.querySelector('.stamp.no');
-  el.addEventListener('pointerdown', e => { x0 = e.clientX; el.style.transition = 'none'; el.setPointerCapture(e.pointerId); });
-  el.addEventListener('pointermove', e => {
-    if (x0 === null) return;
-    dx = e.clientX - x0;
-    el.style.transform = `translateX(${dx}px) rotate(${dx / 20}deg)`;
-    y.style.opacity = Math.max(0, dx / 100); n.style.opacity = Math.max(0, -dx / 100);
-  });
-  const up = () => {
-    if (x0 === null) return;
-    el.style.transition = '';
-    if (Math.abs(dx) > 110) decide(dx > 0); else { el.style.transform = ''; y.style.opacity = n.style.opacity = 0; }
-    x0 = null; dx = 0;
+function handleBuddyPrompt() {
+  if (currentIndex >= activeProposals.length) return;
+  const current = activeProposals[currentIndex];
+  if (!current.canBuddy) {
+    showToast("This is a 1-on-1 meetup. For group events, you can pair up!");
+    return;
+  }
+  handleDecision(true, true);
+}
+
+function updateScheduleUI() {
+  document.getElementById('scheduleCountBadge').textContent = `(${confirmedSchedule.length})`;
+  if (confirmedSchedule.length === 0) {
+    scheduleListEl.innerHTML = `
+      <div class="done-state">
+        <div class="done-icon">📅</div>
+        <div class="done-title">No confirmed hangouts yet</div>
+        <div class="done-desc">Say "Yes" to proposals or pair up on a community activity to build your week without awkward texting.</div>
+      </div>
+    `;
+    return;
+  }
+
+  scheduleListEl.innerHTML = confirmedSchedule.map(item => `
+    <div class="schedule-card">
+      <span class="schedule-tag">Confirmed by Nabo</span>
+      <div class="schedule-time">${item.when.split(' · ')[0]}</div>
+      <div class="schedule-title">${item.title}</div>
+      <div class="schedule-loc">📍 ${item.when.split(' · ')[1] || 'Oslo'} · With ${item.attendeeNames.join(', ')}</div>
+      ${item.pairedBuddy ? `<div style="margin-top:8px; font-size:12px; color:var(--success); font-weight:600;">👥 Paired with buddy: ${item.pairedBuddy}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function setupDrag(card) {
+  let startX = null, currentX = 0;
+  const yesStamp = card.querySelector('.stamp.yes');
+  const noStamp = card.querySelector('.stamp.no');
+
+  const onPointerDown = e => {
+    startX = e.clientX;
+    card.style.transition = 'none';
+    card.setPointerCapture(e.pointerId);
   };
-  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+
+  const onPointerMove = e => {
+    if (startX === null) return;
+    currentX = e.clientX - startX;
+    card.style.transform = `translateX(${currentX}px) rotate(${currentX / 22}deg)`;
+    if (currentX > 0) {
+      yesStamp.style.opacity = Math.min(1, currentX / 90);
+      noStamp.style.opacity = 0;
+    } else {
+      noStamp.style.opacity = Math.min(1, -currentX / 90);
+      yesStamp.style.opacity = 0;
+    }
+  };
+
+  const onPointerUp = () => {
+    if (startX === null) return;
+    card.style.transition = 'transform 0.35s ease, opacity 0.3s ease';
+    if (currentX > 100) {
+      handleDecision(true);
+    } else if (currentX < -100) {
+      handleDecision(false);
+    } else {
+      card.style.transform = '';
+      yesStamp.style.opacity = 0;
+      noStamp.style.opacity = 0;
+    }
+    startX = null;
+    currentX = 0;
+  };
+
+  card.addEventListener('pointerdown', onPointerDown);
+  card.addEventListener('pointermove', onPointerMove);
+  card.addEventListener('pointerup', onPointerUp);
+  card.addEventListener('pointercancel', onPointerUp);
 }
 
-let toastTimer;
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+let toastTimeout;
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toastEl.classList.remove('show'), 2400);
 }
 
-document.getElementById('btnYes').onclick = () => decide(true);
-document.getElementById('btnNo').onclick = () => decide(false);
-document.addEventListener('keydown', e => { if (e.key === 'ArrowRight') decide(true); if (e.key === 'ArrowLeft') decide(false); });
-render();
+function switchTab(tabId) {
+  ['proposals', 'schedule', 'recurrence'].forEach(t => {
+    document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.remove('active');
+    document.getElementById(`view${t.charAt(0).toUpperCase() + t.slice(1)}`).style.display = 'none';
+  });
+
+  if (tabId === 'proposals') {
+    document.getElementById('tabProposals').classList.add('active');
+    document.getElementById('viewProposals').style.display = 'flex';
+  } else if (tabId === 'schedule') {
+    document.getElementById('tabSchedule').classList.add('active');
+    document.getElementById('viewSchedule').style.display = 'block';
+  } else if (tabId === 'recurrence') {
+    document.getElementById('tabRecurrence').classList.add('active');
+    document.getElementById('viewRecurrence').style.display = 'block';
+  }
+}
+
+function switchPersona(personaKey) {
+  currentPersona = personaKey;
+  const p = personas[personaKey];
+  document.getElementById('btnPersonaJonas').classList.toggle('active', personaKey === 'jonas');
+  document.getElementById('btnPersonaKari').classList.toggle('active', personaKey === 'kari');
+
+  document.getElementById('appHeaderTitle').textContent = `Hey ${p.name}`;
+  document.getElementById('appHeaderSub').textContent = p.sub;
+  document.getElementById('contextName').textContent = p.bio;
+  document.getElementById('contextDetails').textContent = p.details;
+
+  activeProposals = [...p.proposals];
+  currentIndex = 0;
+  renderCards();
+
+  logAgent('PERSONA SWITCH', 'tag-ai', `Switched to ${p.name} perspective (${p.role}). Loaded ${p.proposals.length} active agent tasks.`, true);
+}
+
+function toggleAffinity(name, btn) {
+  if (btn.classList.contains('liked')) {
+    btn.classList.remove('liked');
+    btn.textContent = '👍 See again';
+    logAgent('FEEDBACK UPDATED', 'tag-match', `Removed recurrence priority for ${name}.`);
+  } else {
+    btn.classList.add('liked');
+    btn.textContent = '❤️ Saved (Mutual)';
+    showToast(`Saved! Nabo will prioritize informal hangouts with ${name}.`);
+    logAgent('RECURRENCE FLYWHEEL', 'tag-coord', `Mutual affinity registered for ${name}! Scheduling follow-up suggestion in 7 days.`);
+  }
+}
+
+// Button click listeners
+document.getElementById('btnYes').onclick = () => handleDecision(true);
+document.getElementById('btnNo').onclick = () => handleDecision(false);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') handleDecision(true);
+  if (e.key === 'ArrowLeft') handleDecision(false);
+});
+
+// Initial boot
+renderConsole();
+renderCards();
+updateScheduleUI();
 </script>
 </body>
 </html>

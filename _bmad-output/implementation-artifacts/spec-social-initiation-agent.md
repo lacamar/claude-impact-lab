@@ -2,7 +2,8 @@
 title: 'Social Initiation Agent (Nabo) — Prototype & Interaction Flow'
 type: 'feature'
 created: '2026-10-21'
-status: 'draft'
+status: 'done'
+baseline_commit: '063b997c66bdec9a20797c11274ae4c9316fd02b'
 route: 'dispatch'
 review_loop_iteration: 0
 context: ['claude-impact-lab/initial_intent.md', 'claude-impact-lab/BRIEF.md']
@@ -41,26 +42,30 @@ context: ['claude-impact-lab/initial_intent.md', 'claude-impact-lab/BRIEF.md']
 ## Decisions
 - **Demo Hero Persona:** Dual perspective toggle enabled — users can switch between Jonas (newcomer with "sometime" list) and Kari (organizer coordinating community activities) to showcase both Person-to-Person and Org-to-People demand.
 - **Recurrence Loop:** Include a dedicated "Past & Feedback" view where users can privately indicate who they'd like to see again, reinforcing the repeat low-pressure interaction flywheel.
+- **Layout & Presentation:** Split screen layout featuring a sleek central mobile device preview accompanied by a live "Agent Behind-the-Scenes Reasoning & Messaging" stream (visualizing Nabo autonomously coordinating in the background).
+- **Pitch Package:** Provide a dedicated 5-minute hackathon pitch script and live demonstration checklist in `claude-impact-lab/PITCH.md`.
 
 </frozen-after-approval>
 
 ## Code Map
 
-- `claude-impact-lab/index.html` -- Existing static draft with card stack, basic yes/no buttons, and week list. Needs architectural upgrade to support rich proposal inspection, "Why you" transparency, organizer demands, "Go as two" pairing, and post-event recurrence feedback.
-- `claude-impact-lab/initial_intent.md` -- Team consensus and core problem statement.
-- `claude-impact-lab/transcripts/*.md` -- Voice transcripts documenting the lived experience in Oslo, the psychological barriers, and key product pillars.
+- `claude-impact-lab/index.html` -- Main interactive prototype: split desktop/mobile layout with phone card deck, agent reasoning sidebar, dual persona switcher, "Go as two" pairing dialogs, and post-event feedback view.
+- `claude-impact-lab/PITCH.md` -- 5-minute pitch deck narrative and demo walkthrough script for 13:15.
+- `claude-impact-lab/initial_intent.md` -- Core problem definition and background context.
+- `claude-impact-lab/transcripts/*.md` -- Original voice transcripts from Claude Impact Lab.
 
 ## Tasks & Acceptance
 
 **Execution:**
-- [ ] `claude-impact-lab/index.html` -- Redesign and implement the complete Nabo Agent experience:
-  - Header with persona context and agent status indicator ("Nabo active: 4 proposals coordinated").
-  - Rich proposal cards with transparent "Why you" context, timing options, and participant avatars.
-  - Interactive Actions: Private Decline (with safety guarantee), Accept, and "Go with a buddy" option.
-  - "Your Week" calendar summary with confirmed events and details.
-  - "Post-Event Recurrence" view demonstrating the private feedback loop ("meet again" flywheel).
-  - Perspective toggle (Newcomer Jonas vs Organizer Kari) or simulated incoming agent message notifications.
-- [ ] `claude-impact-lab/README.md` -- Update documentation with project pitch, the problem statement, demo instructions, and team hackathon presentation script for 13:15.
+- [x] `claude-impact-lab/index.html` -- Build the complete Nabo Agent prototype:
+  - Responsive split layout: Sleek phone frame + Live Agent Operations console (real-time logs of agent outreach, negotiations, and confirmations).
+  - Persona Switcher: Toggle between Jonas (newcomer) and Kari (community organizer) with custom proposal feeds.
+  - Interactive Proposal Cards: "Why You" attribution, timing slots, private decline ("Mia will never know"), accept, and "Go as two" buddy pairing.
+  - "Your Week" Confirmed Calendar: Displays scheduled hangouts and location details.
+  - "Post-Event Recurrence" Feedback Loop: Anonymous 1-click rating to feed repeat hangout recommendations.
+  - Audio/Visual cues: Micro-animations, celebratory toasts, and Nordic warm aesthetic.
+- [x] `claude-impact-lab/PITCH.md` -- 5-minute pitch script (The Problem, The Persona, The Live Demo, Why AI / Middleman, Next Steps).
+- [x] `claude-impact-lab/README.md` -- Update README with overview and quickstart instructions.
 
 **Acceptance Criteria:**
 - Given a user viewing a proposal, when they decline, then the system confirms the decline was 100% private and other attendees are not notified.
@@ -69,6 +74,12 @@ context: ['claude-impact-lab/initial_intent.md', 'claude-impact-lab/BRIEF.md']
 - The interface feels responsive, modern, visually compelling, and runs out of the box in any browser.
 
 ## Implementation Notes
+
+- Upgraded `claude-impact-lab/index.html` from a basic draft into a responsive dual-view demo cockpit.
+- Added live agent telemetry console on the right side of the desktop view to showcase autonomous coordination, calendar checks, and privacy enforcement in real time.
+- Implemented "Go as two" buddy pairing to directly solve newcomer arrival anxiety highlighted in team audio transcripts.
+- Implemented the post-hangout mutual affinity check ("See again") to demonstrate the recurring friendship flywheel.
+- Created `claude-impact-lab/PITCH.md` featuring a 5-minute presentation script broken into timing segments (Problem, Solution, Live Demo, Why AI, Next Steps) ready for 13:15.
 
 ## Spec Change Log
 

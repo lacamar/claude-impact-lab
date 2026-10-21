@@ -1,7 +1,18 @@
-# Claude Impact Lab
+# Claude Impact Lab — Oslo
 
-One-day build event. Pick a person and their problem, prototype a solution with Claude as a single HTML file, demo it in five minutes.
+## 🚀 Our Project: Nabo (The Autonomous Initiation Agent)
+> *"People give up on coordination long before they give up on each other."*
 
+**Nabo** is an autonomous middleman agent that eliminates the awkward social tax of initiating hangouts ("let's grab coffee sometime"). It coordinates mutual timing in the background, guarantees 100% private rejections (zero social risk/embarrassment), supports "Go as two" pairing to reduce newcomer anxiety, and reinforces repeat low-pressure interactions through anonymous post-event recurrence matching.
+
+- 🖥️ **Live Interactive Demo:** Open [`index.html`](index.html) in any browser.
+- 🎤 **5-Minute Demo & Presentation Script:** [`PITCH.md`](PITCH.md)
+- 📋 **BMAD Architecture Spec:** [`_bmad-output/implementation-artifacts/spec-social-initiation-agent.md`](_bmad-output/implementation-artifacts/spec-social-initiation-agent.md)
+- 🎙️ **Team Brainstorming Transcripts:** [`transcripts/`](transcripts/) and [`initial_intent.md`](initial_intent.md)
+
+---
+
+## Event Details
 - **When:** Wednesday 21 October 2026, 09:30–14:00
 - **Where:** Mesh Youngstorget, Møllergata 6–8, 0179 Oslo ([map](https://www.google.com/maps/search/?api=1&query=59.9140854%2C10.7465087))
 - **Hosts:** Claude Community Oslo, [GritAI](https://www.gritai.studio/) (Aleksander Stensby), Mesh Oslo
