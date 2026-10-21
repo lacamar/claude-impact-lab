@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nabo — activities that ask you</title>
+<style>
+  :root { --bg:#f4f1ea; --card:#fff; --ink:#1c1b18; --muted:#6b675e; --yes:#2e8b57; --no:#c0392b; --accent:#d97706; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; display:flex; flex-direction:column; align-items:center; }
+  header { width:100%; max-width:420px; padding:20px 20px 0; }
+  header h1 { margin:0; font-size:22px; }
+  header p { margin:4px 0 0; color:var(--muted); font-size:14px; }
+  .who { display:flex; gap:8px; align-items:center; margin-top:12px; font-size:13px; color:var(--muted); }
+  .who b { color:var(--ink); }
+  .stack { position:relative; width:360px; height:470px; margin:20px 0 8px; }
+  .card { position:absolute; inset:0; background:var(--card); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.12); padding:22px; display:flex; flex-direction:column; transition:transform .35s ease, opacity .35s ease; user-select:none; touch-action:none; }
+  .card .tag { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  .card h2 { margin:8px 0 4px; font-size:26px; line-height:1.15; }
+  .card .when { color:var(--muted); font-size:15px; }
+  .card .why { margin-top:auto; background:#fff7e6; border-left:4px solid var(--accent); padding:12px 14px; border-radius:8px; font-size:15px; line-height:1.4; }
+  .card .why small { display:block; color:var(--muted); margin-bottom:4px; font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
+  .card .people { display:flex; gap:6px; margin-top:14px; align-items:center; font-size:14px; color:var(--muted); }
+  .card .people span { width:30px; height:30px; border-radius:50%; background:#e8e2d4; display:grid; place-items:center; font-weight:600; color:var(--ink); font-size:13px; }
+  .card.out-right { transform:translateX(130%) rotate(12deg); opacity:0; }
+  .card.out-left { transform:translateX(-130%) rotate(-12deg); opacity:0; }
+  .stamp { position:absolute; top:24px; font-size:28px; font-weight:800; padding:4px 12px; border:4px solid; border-radius:8px; opacity:0; transform:rotate(-15deg); pointer-events:none; }
+  .stamp.yes { right:24px; color:var(--yes); border-color:var(--yes); }
+  .stamp.no { left:24px; color:var(--no); border-color:var(--no); transform:rotate(15deg); }
+  .actions { display:flex; gap:20px; margin:8px 0 16px; }
+  .actions button { width:64px; height:64px; border-radius:50%; border:0; font-size:28px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.12); background:#fff; }
+  .actions .no { color:var(--no); } .actions .yes { color:var(--yes); }
+  .hint { color:var(--muted); font-size:13px; margin-bottom:18px; }
+  .week { width:100%; max-width:420px; padding:0 20px 30px; }
+  .week h3 { margin:0 0 8px; font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  .week ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+  .week li { background:#fff; border-radius:10px; padding:10px 12px; font-size:14px; display:flex; justify-content:space-between; border-left:4px solid var(--yes); }
+  .week li span { color:var(--muted); }
+  .week .empty { color:var(--muted); font-size:14px; }
+  .done { text-align:center; padding:40px 24px; }
+  .done h2 { margin:0 0 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Nabo</h1>
+  <p>Things to do near you, with people like you. Say yes or no.</p>
+  <div class="who">You: <b>Jonas</b> · Grünerløkka · likes jazz, dogs, cycling · free Sat afternoon</div>
+</header>
+
+<div class="stack" id="stack"></div>
+
+<div class="actions">
+  <button class="no" id="btnNo" aria-label="No">✕</button>
+  <button class="yes" id="btnYes" aria-label="Yes">✓</button>
+</div>
+<div class="hint">Drag the card, press ← / →, or tap the buttons</div>
+
+<section class="week">
+  <h3>Your week</h3>
+  <ul id="week"><li class="empty">Nothing yet. Say yes to something.</li></ul>
+</section>
+
+<script>
+const me = { name:'Jonas', interests:['jazz','dogs','cycling'] };
+
+const proposals = [
+  { tag:'Music', title:'Jazz at Blå', when:'Thu 20:00 · 12 min walk', why:'Mia and Erik from your street are going. Both listen to the same Oslo jazz playlist as you.', people:['M','E'] },
+  { tag:'Help needed', title:'Walk a shelter dog', when:'Sat 14:00 · Dyrebeskyttelsen Oslo', why:'The shelter needs 3 walkers this Saturday. You said you like dogs and your Saturday afternoon is free.', people:['S'] },
+  { tag:'Help needed', title:'Move a piano', when:'Tomorrow 10:00 · Sofienberg music school', why:'Kari needs four strong people for 40 minutes. Two neighbours already said yes. Coffee and waffles after.', people:['K','A','T'] },
+  { tag:'Sport', title:'Sunday ride to Maridalen', when:'Sun 10:00 · 35 km, easy pace', why:'A group of six from Grünerløkka rides every Sunday. Two of them are also new in Oslo.', people:['P','L','N','+3'] },
+  { tag:'Coffee', title:'Coffee with Amina', when:'Wed 17:30 · Tim Wendelboe', why:'Amina moved here from Bergen in August, works in design like you, and said yes to meeting new people.', people:['A'] },
+  { tag:'Learn', title:'Norwegian practice night', when:'Tue 18:00 · Deichman Grünerløkka', why:'Eight people practising Norwegian over tea. Three are at your level.', people:['R','J','+6'] },
+];
+
+const stack = document.getElementById('stack');
+const week = document.getElementById('week');
+const yes = [];
+let i = 0;
+
+function render() {
+  stack.innerHTML = '';
+  if (i >= proposals.length) {
+    stack.innerHTML = `<div class="card done"><h2>That's all for this week</h2><p>You said yes to ${yes.length}. We'll tell the others. New proposals arrive Sunday evening.</p></div>`;
+    return;
+  }
+  [i + 1, i].forEach(k => {
+    const p = proposals[k]; if (!p) return;
+    const el = document.createElement('div');
+    el.className = 'card';
+    if (k === i + 1) el.style.transform = 'scale(.95) translateY(12px)';
+    el.innerHTML = `
+      <div class="tag">${p.tag}</div>
+      <h2>${p.title}</h2>
+      <div class="when">${p.when}</div>
+      <div class="why"><small>Why you</small>${p.why}</div>
+      <div class="people">${p.people.map(x => `<span>${x}</span>`).join('')} going</div>
+      <div class="stamp yes">YES</div><div class="stamp no">NOPE</div>`;
+    stack.appendChild(el);
+    if (k === i) drag(el);
+  });
+}
+
+function decide(ok) {
+  const top = stack.lastElementChild;
+  if (!top || i >= proposals.length) return;
+  top.classList.add(ok ? 'out-right' : 'out-left');
+  if (ok) {
+    yes.push(proposals[i]);
+    week.innerHTML = yes.map(p => `<li>${p.title}<span>${p.when.split(' · ')[0]}</span></li>`).join('');
+  }
+  i++;
+  setTimeout(render, 300);
+}
+
+function drag(el) {
+  let x0 = null, dx = 0;
+  const y = el.querySelector('.stamp.yes'), n = el.querySelector('.stamp.no');
+  el.addEventListener('pointerdown', e => { x0 = e.clientX; el.style.transition = 'none'; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', e => {
+    if (x0 === null) return;
+    dx = e.clientX - x0;
+    el.style.transform = `translateX(${dx}px) rotate(${dx / 20}deg)`;
+    y.style.opacity = Math.max(0, dx / 100); n.style.opacity = Math.max(0, -dx / 100);
+  });
+  const up = () => {
+    if (x0 === null) return;
+    el.style.transition = '';
+    if (Math.abs(dx) > 110) decide(dx > 0); else { el.style.transform = ''; y.style.opacity = n.style.opacity = 0; }
+    x0 = null; dx = 0;
+  };
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+}
+
+document.getElementById('btnYes').onclick = () => decide(true);
+document.getElementById('btnNo').onclick = () => decide(false);
+document.addEventListener('keydown', e => { if (e.key === 'ArrowRight') decide(true); if (e.key === 'ArrowLeft') decide(false); });
+render();
+</script>
+</body>
+</html>
