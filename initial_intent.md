@@ -152,3 +152,10 @@ Claude walked through the four steps as Jonas, someone who stopped asking. The t
 ## Decision, 12:40
 
 - **Not Meetup: nobody creates events on Nabo.** The agent scans what is already happening in the city (gigs, climbing nights, volunteer shifts, talks) and sends people who fit to them, together. The only things Nabo creates itself are the small pair plans after a mutual pick. Wording on the card, the ledger and the demo script changed to say "found in the city".
+
+## Decisions, 12:50
+
+- **Show the scanning.** A short animation before the first card: what Nabo reads about people (interests, age, free evenings, who they showed up for, who they'd like to see again) and what it reads about events (time, place, organiser, nature, trust). A feed of real-looking listings streams past, food bank, climbing night, shelter walk, Red Cross shift, and one gets picked with the reasons. Makes clear the finding and the scheduling is the agent's work.
+- **Organisations later.** If it works, a shelter or the Red Cross should be able to say "we need four people Thursday" and Nabo pulls them. Same engine, parked.
+- **Monetization, skipped for the demo.** Venues could publish directly or pay for visibility. Today is idealistic on purpose.
+- **Maybe not an app.** Could be a connector to whatever personal agent people already use. Future idea, not for today.

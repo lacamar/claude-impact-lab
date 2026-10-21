@@ -26,6 +26,10 @@ Point at the left phone.
 
 > Four questions. Interests, free evenings, a photo, and the deal: Nabo proposes, you only say yes or no, and if you say yes and don't show, Nabo pauses you. Effort on purpose. It keeps flakers out.
 
+**The scan.** A dark panel appears for five seconds: what Nabo reads about people on the left, a feed of things on in Oslo in the middle, a counter on the right. One line turns green.
+
+> This is the agent's job. It reads interests, free evenings, who showed up before. It scans a couple of hundred things already happening this week, food bank shifts, climbing nights, a Red Cross call for four people. One fits four people at once.
+
 **The card.** The jazz card appears on four phones. Point at the why-you box.
 
 > This gig is on anyway. Nabo found it among a couple of hundred things in Oslo this week and picked four people who fit. Same card, same time, to all four. Nobody organised it. No "maybe". If you say no, nobody knows you were asked.

@@ -102,6 +102,25 @@
   .wk li { font-size:13px; display:flex; justify-content:space-between; gap:8px; border-left:3px solid var(--yes); padding-left:8px; }
   .wk li span { color:var(--muted); white-space:nowrap; }
   .wk .fine { margin-top:6px; }
+  .scan { max-width:1180px; margin:12px auto 0; padding:0 20px; display:none; }
+  .scan.show { display:block; }
+  .scan .box { background:#1c1b18; color:#f4f1ea; border-radius:14px; padding:14px 16px; display:grid; grid-template-columns:1fr 1.6fr 1fr; gap:14px; }
+  @media (max-width:800px) { .scan .box { grid-template-columns:1fr; } }
+  .scan h4 { margin:0 0 6px; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:#d97706; }
+  .scan ul { list-style:none; margin:0; padding:0; font-size:12.5px; line-height:1.5; }
+  .scan .sig li { color:#cfc8b8; }
+  .scan .sig li b { color:#fff; font-weight:600; }
+  .scan .feed { max-height:132px; overflow:hidden; position:relative; }
+  .scan .feed li { display:flex; justify-content:space-between; gap:10px; padding:2px 6px; border-radius:6px; opacity:0; transform:translateY(6px); animation:in .25s forwards; }
+  .scan .feed li span { color:#8f8878; white-space:nowrap; }
+  .scan .feed li.skip { text-decoration:line-through; color:#8f8878; }
+  .scan .feed li.pick { background:#2e8b57; color:#fff; font-weight:600; }
+  .scan .feed li.pick span { color:#e6f4ea; }
+  @keyframes in { to { opacity:1; transform:none; } }
+  .scan .count { font-size:26px; font-weight:800; color:#fff; line-height:1; }
+  .scan .count small { display:block; font-size:11px; color:#cfc8b8; font-weight:400; margin-top:4px; }
+  .scan .why { margin-top:8px; font-size:12.5px; color:#cfc8b8; line-height:1.45; }
+  .scan .why b { color:#fff; }
   .ledger { max-width:1180px; margin:0 auto 40px; padding:0 20px; }
   .ledger h3 { margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
   .ledger ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
@@ -126,6 +145,17 @@
 </div>
 
 <div class="agent"><div class="bar"><b>Nabo</b><span id="agentMsg"></span></div></div>
+
+<div class="scan" id="scan"><div class="box">
+  <div class="sig"><h4>Reading, about people</h4><ul>
+    <li><b>4 people</b> open to suggestions near Grünerløkka</li>
+    <li>Interests, age, free evenings</li>
+    <li>Who they said yes to before, who they showed up for</li>
+    <li>Who they'd like to see again</li>
+  </ul></div>
+  <div><h4>Scanning what's on in Oslo this week</h4><ul class="feed" id="feed"></ul></div>
+  <div><div class="count"><span id="scanN">0</span><small>things found, time, place, organiser, nature, trust</small></div><div class="why" id="scanWhy"></div></div>
+</div></div>
 
 <div class="phones" id="phones"></div>
 
@@ -162,7 +192,19 @@ const SCRIPT = [ {id:'sara', ok:true, t:900}, {id:'erik', ok:false, t:1900}, {id
 let answers = {};
 let isOn = false;
 let isDropped = false;
-let phase = 'onboard';      // 'onboard' | 'ask' | 'after'
+let phase = 'onboard';      // 'onboard' | 'scan' | 'ask' | 'after'
+const FEED = [
+  { t:'Food bank, Tøyen, needs 3 helpers', w:'Thu 17:00', r:'skip' },
+  { t:'Intro climbing night, Klatreverket', w:'Wed 19:00', r:'skip' },
+  { t:'Dog shelter walk, 4 volunteers wanted', w:'Sat 11:00', r:'skip' },
+  { t:'Talk: AI and the city, Deichman', w:'Tue 18:00', r:'skip' },
+  { t:'Live jazz, small bar on Grünerløkka', w:'Fri 20:00', r:'pick' },
+  { t:'Sunday ride, 35 km easy pace', w:'Sun 10:00', r:'skip' },
+  { t:'Board game night, 2 spots', w:'Thu 19:00', r:'skip' },
+  { t:'Piano moving, Sofienberg, 4 strong people', w:'Sat 14:00', r:'skip' },
+  { t:'Language café, newcomers welcome', w:'Mon 18:00', r:'skip' },
+  { t:'Red Cross: 4 people Thursday evening', w:'Thu 18:00', r:'skip' },
+];
 const INTERESTS = ['Jazz','Cycling','Cooking','Climbing','Photography','Board games','Running','Film'];
 const EVENINGS = ['Mon eve','Tue eve','Wed eve','Thu eve','Fri eve','Sat day','Sun day'];
 let ob = { step:0, interests:[], evenings:[], photo:false, cal:false };
@@ -225,7 +267,7 @@ function render() {
     const a = answers[p.id];
     let body;
     if (p.paused) body = pausedScreen(p);
-    else if (phase === 'onboard') body = p.you ? onboardScreen(p) : onboardedScreen(p);
+    else if (phase === 'onboard' || phase === 'scan') body = p.you ? onboardScreen(p) : onboardedScreen(p);
     else if (phase === 'after') {
       if (a !== true) body = notThereScreen(p);
       else if (allPicked()) body = nextScreen(p);
@@ -251,13 +293,14 @@ function render() {
   phones.querySelectorAll('button[data-pair]').forEach(b => b.onclick = () => decidePair(b.dataset.pair, b.dataset.who, b.dataset.ok === '1'));
 
   btnSkip.disabled = phase !== 'onboard';
-  btnAuto.disabled = phase === 'onboard';
+  btnAuto.disabled = phase === 'onboard' || phase === 'scan';
 
   btnAfter.disabled = !(isOn && phase === 'ask');
   btnAuto.textContent = phase === 'after' && !allPicked() ? 'Let the others pick' : 'Let the others answer';
 
   const y = yesCount(), n = noCount(), asked = ACTIVE.length - y - n;
-  if (phase === 'onboard') agentMsg.textContent = `Jonas is new. Four questions before the first proposal. The others answered them weeks ago. It takes a couple of minutes on purpose: people who skip it are the ones who flake.`;
+  if (phase === 'scan') { /* set by startScan */ }
+  else if (phase === 'onboard') agentMsg.textContent = `Jonas is new. Four questions before the first proposal. The others answered them weeks ago. It takes a couple of minutes on purpose: people who skip it are the ones who flake.`;
   else if (phase === 'after') {
     if (allPicked()) {
       const pairs = mutualPairs();
@@ -346,7 +389,7 @@ function onScreen(p) {
 
 function pausedScreen(p) {
   const line = phase === 'onboard' ? 'Nothing is proposed to you this week.'
-    : phase === 'ask' ? 'There was a spot for you Friday. It went to someone else.'
+    : phase === 'ask' || phase === 'scan' ? 'There was a spot for you Friday. It went to someone else.'
     : 'Friday happened without you. Nobody there was told why.';
   return `<div class="state"><div class="dot off"></div>
     <h3>Paused</h3>
@@ -397,12 +440,32 @@ function obAction(a) {
   if (a === 'next') ob.step++;
   if (a === 'cal') ob.cal = !ob.cal;
   if (a === 'photo') ob.photo = true;
-  if (a === 'done') { ob.step = 4; log(`${PEOPLE[0].name} onboarded: ${ob.interests.join(', ')}; free ${ob.evenings.join(', ') || 'per calendar'}; photo added.`, true); timers.push(setTimeout(startAsk, 1400)); }
+  if (a === 'done') { ob.step = 4; log(`${PEOPLE[0].name} onboarded: ${ob.interests.join(', ')}; free ${ob.evenings.join(', ') || 'per calendar'}; photo added.`, true); timers.push(setTimeout(startScan, 900)); }
   render();
 }
 
-function startAsk() {
+function startScan() {
   if (phase !== 'onboard') return;
+  phase = 'scan';
+  render();
+  const panel = document.getElementById('scan'), feed = document.getElementById('feed'), nEl = document.getElementById('scanN'), why = document.getElementById('scanWhy');
+  panel.classList.add('show'); feed.innerHTML = ''; why.innerHTML = ''; nEl.textContent = '0';
+  agentMsg.textContent = 'Nobody creates events here. Nabo reads what is already on in Oslo and looks for one that fits four people at once.';
+  let n = 0;
+  const tick = setInterval(() => { n = Math.min(212, n + 23); nEl.textContent = n; if (n >= 212) clearInterval(tick); }, 120);
+  timers.push(tick);
+  FEED.forEach((f, i) => timers.push(setTimeout(() => {
+    const li = document.createElement('li'); li.textContent = f.t; const sp = document.createElement('span'); sp.textContent = f.w; li.appendChild(sp);
+    feed.appendChild(li);
+    if (feed.children.length > 5) feed.removeChild(feed.firstChild);
+    if (f.r === 'pick') { li.className = 'pick'; why.innerHTML = '<b>Picked.</b> Four people like jazz, all free Friday, none has flaked, two haven\'t met. Tickets left: 6.'; }
+    else setTimeout(() => li.classList.add('skip'), 350);
+  }, 350 + i * 330)));
+  timers.push(setTimeout(() => { panel.classList.remove('show'); startAsk(); }, 350 + FEED.length * 330 + 1400));
+}
+
+function startAsk() {
+  if (phase !== 'onboard' && phase !== 'scan') return;
   phase = 'ask';
   log('Scanned 212 things happening in Oslo this week: gigs, climbing nights, volunteer shifts, talks. Picked "Live jazz, then a drink, Fri 20:00" for 4 people who fit.');
   log('Proposed it to Jonas, Sara, Erik and Amina. Same message to each, nobody named as the initiator.');
@@ -414,7 +477,7 @@ function skipOnboarding() {
   if (!ob.interests.length) ob.interests = ['Jazz', 'Cycling', 'Cooking'];
   if (!ob.evenings.length) ob.evenings = ['Thu eve', 'Fri eve', 'Sat day'];
   ob.photo = true; ob.step = 4;
-  startAsk();
+  startScan();
 }
 
 // ---- the morning after ----
@@ -559,6 +622,7 @@ function reset() {
   timers.forEach(clearTimeout); timers = [];
   answers = {}; isOn = false; isDropped = false; phase = 'onboard'; picks = {}; pairAnswers = {}; ledger.innerHTML = '';
   ob = { step:0, interests:[], evenings:[], photo:false, cal:false };
+  document.getElementById('scan').classList.remove('show');
   log('Jonas signed up. Four questions before anything is proposed.');
   render();
 }
