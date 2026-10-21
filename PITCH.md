@@ -44,6 +44,15 @@
 
 *(Open `index.html` on the screen. The judges see the phone app on the left and the real-time agent telemetry on the right).*
 
+#### Step 0: The Pain of Group Chat vs. Autonomous Handshake (New!)
+- Click the glowing **"⚡ Auto-Arrange (Kill Group Chat)"** button in the top bar.
+- *"Look at the left column: This is the reality everyone in this room has lived through—18 messages across 6 days, calendar deadlock, and the plan dying of exhaustion.*
+- *Now look at the right column: Nabo's agents ingest encrypted availability, execute a Private Set Intersection in 420 milliseconds, solve transit and venue midpoints, and require **zero human messages**.*
+- Click **"🚀 Run Live Autonomous Negotiation"**:
+  - Watch the 4 steps illuminate in sequence.
+  - Watch the live telemetry console stream the handshake and cryptographic hashes.
+  - The modal auto-completes and injects **"Specialty Coffee at Fuglen with Alex M."** right onto Jonas's proposal deck ready for 1-tap confirmation!
+
 #### Step 1: The "Why You" Context
 - Point to the card: **"Coffee with Mia"**
 - *"Notice the card doesn't just say 'Go here'. It explains **Why Nabo proposed this**: 'You both said coffee sometime at the meetup 3 weeks ago. Nabo checked Mia's calendar, she said yes to Thursday 17:30. Nabo asks you now.'*
