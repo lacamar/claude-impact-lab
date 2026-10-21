@@ -37,6 +37,8 @@
   .week li { background:#fff; border-radius:10px; padding:10px 12px; font-size:14px; display:flex; justify-content:space-between; border-left:4px solid var(--yes); }
   .week li span { color:var(--muted); }
   .week .empty { color:var(--muted); font-size:14px; }
+  .toast { position:fixed; left:50%; bottom:28px; transform:translate(-50%, 20px); background:var(--ink); color:#fff; padding:10px 16px; border-radius:999px; font-size:14px; opacity:0; transition:all .25s; pointer-events:none; }
+  .toast.show { opacity:1; transform:translate(-50%, 0); }
   .done { text-align:center; padding:40px 24px; }
   .done h2 { margin:0 0 8px; }
 </style>
@@ -44,8 +46,8 @@
 <body>
 <header>
   <h1>Nabo</h1>
-  <p>Things to do near you, with people like you. Say yes or no.</p>
-  <div class="who">You: <b>Jonas</b> · Grünerløkka · likes jazz, dogs, cycling · free Sat afternoon</div>
+  <p>You said "sometime" to people. Nabo does the asking, finds the time, and only tells you when it's a yes on both sides.</p>
+  <div class="who">You: <b>Jonas</b> · "sometime" with Mia, Erik, Amina, the Sunday riders · free Thu eve, Sat afternoon</div>
 </header>
 
 <div class="stack" id="stack"></div>
@@ -55,6 +57,7 @@
   <button class="yes" id="btnYes" aria-label="Yes">✓</button>
 </div>
 <div class="hint">Drag the card, press ← / →, or tap the buttons</div>
+<div class="toast" id="toast"></div>
 
 <section class="week">
   <h3>Your week</h3>
@@ -65,12 +68,12 @@
 const me = { name:'Jonas', interests:['jazz','dogs','cycling'] };
 
 const proposals = [
-  { tag:'Music', title:'Jazz at Blå', when:'Thu 20:00 · 12 min walk', why:'Mia and Erik from your street are going. Both listen to the same Oslo jazz playlist as you.', people:['M','E'] },
-  { tag:'Help needed', title:'Walk a shelter dog', when:'Sat 14:00 · Dyrebeskyttelsen Oslo', why:'The shelter needs 3 walkers this Saturday. You said you like dogs and your Saturday afternoon is free.', people:['S'] },
-  { tag:'Help needed', title:'Move a piano', when:'Tomorrow 10:00 · Sofienberg music school', why:'Kari needs four strong people for 40 minutes. Two neighbours already said yes. Coffee and waffles after.', people:['K','A','T'] },
-  { tag:'Sport', title:'Sunday ride to Maridalen', when:'Sun 10:00 · 35 km, easy pace', why:'A group of six from Grünerløkka rides every Sunday. Two of them are also new in Oslo.', people:['P','L','N','+3'] },
-  { tag:'Coffee', title:'Coffee with Amina', when:'Wed 17:30 · Tim Wendelboe', why:'Amina moved here from Bergen in August, works in design like you, and said yes to meeting new people.', people:['A'] },
-  { tag:'Learn', title:'Norwegian practice night', when:'Tue 18:00 · Deichman Grünerløkka', why:'Eight people practising Norwegian over tea. Three are at your level.', people:['R','J','+6'] },
+  { tag:'Mia said yes', title:'Coffee with Mia', when:'Thu 17:30 · Tim Wendelboe', why:'You both said "coffee sometime" three weeks ago. Nabo asked Mia first. She said yes to Thursday. You never had to.', people:['M'] },
+  { tag:'Erik said yes', title:'Jazz at Blå with Erik', when:'Thu 20:00 · after coffee, 12 min walk', why:'Erik mentioned Blå at the office party. He\'s in for Thursday. If you say no, he won\'t know you were asked.', people:['E'] },
+  { tag:'2 of 3 said yes', title:'Sunday ride to Maridalen', when:'Sun 10:00 · 35 km, easy pace', why:'Per and Lina from the bike shop said "join us sometime". Nabo picked the first Sunday all of you are free.', people:['P','L','N'] },
+  { tag:'Amina said yes', title:'Lunch with Amina', when:'Wed 12:00 · near both your offices', why:'You exchanged numbers at the meetup in August and never wrote. Nabo wrote for you. Lunch, not coffee, because Wednesday is her short day.', people:['A'] },
+  { tag:'Kari needs 4', title:'Move a piano, then waffles', when:'Sat 14:00 · Sofienberg music school', why:'Kari asked Nabo for four people instead of asking neighbours one by one. Three said yes. You\'re free Saturday afternoon.', people:['K','A','T'] },
+  { tag:'Nabo\'s idea', title:'Walk a shelter dog with Mia', when:'Sat 11:00 · Dyrebeskyttelsen Oslo', why:'You both like dogs and both said yes to Thursday. Nabo suggests a second one before you have to.', people:['M'] },
 ];
 
 const stack = document.getElementById('stack');
@@ -81,7 +84,7 @@ let i = 0;
 function render() {
   stack.innerHTML = '';
   if (i >= proposals.length) {
-    stack.innerHTML = `<div class="card done"><h2>That's all for this week</h2><p>You said yes to ${yes.length}. We'll tell the others. New proposals arrive Sunday evening.</p></div>`;
+    stack.innerHTML = `<div class="card done"><h2>That's all for this week</h2><p>You said yes to ${yes.length}. Nabo confirms with them and reminds you both the morning of. The ${proposals.length - yes.length} you passed on will never know they were asked. Nothing to write, nothing to chase.</p></div>`;
     return;
   }
   [i + 1, i].forEach(k => {
@@ -108,6 +111,9 @@ function decide(ok) {
   if (ok) {
     yes.push(proposals[i]);
     week.innerHTML = yes.map(p => `<li>${p.title}<span>${p.when.split(' · ')[0]}</span></li>`).join('');
+    toast(`Nabo tells ${proposals[i].people.length > 1 ? 'them' : proposals[i].title.split(' with ')[1] || 'them'} you're in. Reminder the morning of.`);
+  } else {
+    toast('No worries. They won\'t know you were asked.');
   }
   i++;
   setTimeout(render, 300);
@@ -130,6 +136,13 @@ function drag(el) {
     x0 = null; dx = 0;
   };
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 document.getElementById('btnYes').onclick = () => decide(true);
