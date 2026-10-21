@@ -81,6 +81,43 @@
 
 ---
 
+## 🏗️ Architecture & System Design (For Technical Judges)
+
+### The Double Opt-In & Social Shield Handshake
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Jonas as Jonas (User A)
+    participant NaboA as Nabo Agent (Jonas)
+    participant NaboB as Nabo Agent (Mia)
+    actor Mia as Mia (User B)
+
+    Note over Jonas,Mia: Informal trigger: Both said "coffee sometime" 3 weeks ago
+    NaboA->>NaboB: Autonomous Ping: "Check Mia's availability for Thu 17:30"
+    NaboB-->>NaboA: Handshake Confirmed: "Mia is free Thu 17:30 [Tim Wendelboe]"
+    NaboA->>Jonas: Present Proposal Card with "Why You" Context
+    
+    alt Jonas Accepts (✓)
+        Jonas->>NaboA: Accept Proposal
+        NaboA->>NaboB: Double Opt-In Finalized
+        NaboA->>Jonas: Lock into "Your Week" & Export .ics Invite
+        NaboB->>Mia: Notify Mia: "Coffee Thursday 17:30 with Jonas Confirmed!"
+    else Jonas Declines (✕) - [Social Shield Active]
+        Jonas->>NaboA: Decline Privately
+        Note over NaboA: Social Shield Rule Applied: Archive silently
+        NaboA->>Jonas: Confirmation: "Declined privately. Mia will never know."
+        Note over NaboB,Mia: ZERO notification sent. Mia never knows Jonas was asked.
+    end
+```
+
+### System Invariants (BMad Architecture Spine)
+- **AD-1 (Local-First Reliability):** Standalone zero-cloud client runtime (`localStorage` + `Blob` RFC-5545 `.ics` export), guaranteeing 100% demo uptime.
+- **AD-2 (Zero-Knowledge Rejection Protocol):** Declines are strictly local drop events with mathematical impossibility of counterparty leak.
+- **AD-3 (Transparent Attribution):** Every proposal carries a verifiable causal trigger (shared tags, past promise, proximity).
+- **AD-4 (Atomic Unidirectional State):** Action dispatchers ensure seamless state sync across cards, calendar, and telemetry console.
+
+---
+
 ### 5. What's Next & Call to Action (4:30 – 5:00)
 
 > *"Today we built the complete working interaction loop.*
