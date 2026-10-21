@@ -139,3 +139,12 @@ Claude walked through the four steps as Jonas, someone who stopped asking. The t
 
 - Hinge-style nudges: decline too many proposals and you are paused; accept but never show up and you are asked to attend before getting more.
 - A "sometime" list of people you already know. Not needed for the group-first demo.
+
+## Decisions, 12:30 after the closed loop
+
+- **The loop is right.** After a group event you pick who you'd like to see again. Only a mutual pick leads to anything, and then Nabo proposes an actual plan with a time, which both answer yes or no. Interest first, plan second, so a no on the plan can be about timing rather than the person.
+- **The soft spot is accepted.** If a mutual pair's plan doesn't happen, the one who said yes can infer the other passed. Same leak Hinge accepts. Nabo only proposes when it's mutual, so a yes is a safe bet most of the time.
+- **Antisocial score.** People who keep saying no to people they themselves picked, or who say yes and don't show up, get quietly de-ranked. The agent learns it over time. Nobody is told their score.
+- **Flake phone.** A fifth phone, someone who said yes last week and didn't go, now paused. Worth showing.
+- **Demo script.** Wanted, one page, which button when.
+- **Be more ambitious.** The hosts keep asking for it. The team likes what it has and wants a bolder frame on top, not a different product.

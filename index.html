@@ -19,11 +19,14 @@
   .agent .bar { background:#fff7e6; border-left:4px solid var(--accent); border-radius:8px; padding:10px 14px; font-size:14px; line-height:1.4; min-height:42px; }
   .agent .bar b { color:var(--accent); text-transform:uppercase; letter-spacing:.06em; font-size:11px; display:block; margin-bottom:2px; }
 
-  .phones { max-width:1180px; margin:16px auto 30px; padding:0 20px; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:16px; }
-  @media (max-width:900px) { .phones { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  .phones { max-width:1180px; margin:16px auto 30px; padding:0 20px; display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:14px; }
+  @media (max-width:1100px) { .phones { grid-template-columns:repeat(3, minmax(0,1fr)); } }
+  @media (max-width:800px) { .phones { grid-template-columns:repeat(2, minmax(0,1fr)); } }
   @media (max-width:480px) { .phones { grid-template-columns:1fr; } }
 
   .phone { background:#1c1b18; border-radius:28px; padding:10px; box-shadow:0 14px 34px rgba(0,0,0,.18); }
+  .phone.paused { opacity:.8; }
+  .state .dot.off { background:var(--no); }
   .phone.you { outline:3px solid var(--accent); outline-offset:3px; }
   .screen { background:var(--bg); border-radius:20px; min-height:560px; display:flex; flex-direction:column; overflow:hidden; }
   .sh { padding:12px 14px 8px; display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--muted); border-bottom:1px solid var(--line); }
@@ -89,6 +92,16 @@
   .ob .photo { display:flex; align-items:center; gap:12px; background:#fff; border-radius:14px; padding:12px; }
   .ob .photo .av { width:56px; height:56px; border-radius:50%; display:grid; place-items:center; font-weight:700; color:#fff; font-size:22px; background:#e8e2d4; }
   .ob .fine { font-size:12px; color:var(--muted); line-height:1.35; }
+  .next .actions { margin-top:10px; }
+  .next .actions button { height:42px; font-size:14px; }
+  .next.done .tag { color:var(--yes); }
+  .next.off { opacity:.75; }
+  .wk { margin-top:10px; background:#fff; border-radius:12px; padding:10px 12px; }
+  .wk h4 { margin:0 0 6px; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  .wk ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+  .wk li { font-size:13px; display:flex; justify-content:space-between; gap:8px; border-left:3px solid var(--yes); padding-left:8px; }
+  .wk li span { color:var(--muted); white-space:nowrap; }
+  .wk .fine { margin-top:6px; }
   .ledger { max-width:1180px; margin:0 auto 40px; padding:0 20px; }
   .ledger h3 { margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
   .ledger ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
@@ -139,7 +152,9 @@ const PEOPLE = [
     why:'Three people who match your interests are going. You said Fridays are your best night.' },
   { id:'amina', name:'Amina', color:'#b83280', bits:['Two years in Oslo','Jazz and photography','Says yes to walks'],
     why:'Three people who match your interests are going, one of them also into photography.' },
+  { id:'tomas', name:'Tomas', paused:true, color:'#7a7a7a', bits:['Said yes to a climb last Thursday','Did not go, did not cancel'], why:'' },
 ];
+const ACTIVE = PEOPLE.filter(p => !p.paused);
 
 // In auto mode the others answer one by one. Erik says no.
 const SCRIPT = [ {id:'sara', ok:true, t:900}, {id:'erik', ok:false, t:1900}, {id:'amina', ok:true, t:3000} ];
@@ -152,6 +167,8 @@ const INTERESTS = ['Jazz','Cycling','Cooking','Climbing','Photography','Board ga
 const EVENINGS = ['Mon eve','Tue eve','Wed eve','Thu eve','Fri eve','Sat day','Sun day'];
 let ob = { step:0, interests:[], evenings:[], photo:false, cal:false };
 let picks = {};             // id -> array of ids they'd like to see again
+let pairAnswers = {};       // 'a|b:id' -> true/false
+const PAIR_SCRIPT = [ {id:'sara', t:900}, {id:'amina', t:1900} ];   // others say yes to their pair cards
 let timers = [];
 
 // The morning after, in auto mode. Sara picks Jonas and Amina; Amina picks only Sara.
@@ -184,16 +201,31 @@ function noCount() { return Object.values(answers).filter(v => v === false).leng
 function went() { return PEOPLE.filter(q => answers[q.id] === true); }
 function pairKey(a, b) { return [a, b].sort().join('|'); }
 function mutual(a, b) { return (picks[a] || []).includes(b) && (picks[b] || []).includes(a); }
+function pairAns(key, id) { return pairAnswers[key + ':' + id]; }
+function pairOn(a, b) { const k = pairKey(a, b); return pairAns(k, a) === true && pairAns(k, b) === true; }
+function myPairsPending() { return went().some(p => went().some(q => q.id !== p.id && mutual(p.id, q.id) && pairAns(pairKey(p.id, q.id), p.id) === undefined)); }
+function weekFor(p) {
+  const items = [];
+  if (isOn && answers[p.id] === true) items.push({ what: 'Jazz with ' + went().filter(q => q.id !== p.id).map(q => q.name).join(', '), when: 'Fri · went ✓' });
+  went().filter(q => q.id !== p.id && mutual(p.id, q.id) && pairOn(p.id, q.id)).forEach(q => { const plan = PAIR_PLANS[pairKey(p.id, q.id)]; items.push({ what: plan.what + ' with ' + q.name, when: plan.when.split(' · ')[0] }); });
+  return items;
+}
+function weekHtml(p) {
+  const items = weekFor(p);
+  if (!items.length) return '';
+  return `<div class="wk"><h4>Your week</h4><ul>${items.map(i => `<li>${i.what}<span>${i.when}</span></li>`).join('')}</ul><div class="fine">${items.length} thing${items.length > 1 ? 's' : ''}. ${p.name} asked nobody.</div></div>`;
+}
 function allPicked() { return went().every(q => picks[q.id] !== undefined); }
 
 function render() {
   phones.innerHTML = '';
   PEOPLE.forEach(p => {
     const el = document.createElement('div');
-    el.className = 'phone' + (p.you ? ' you' : '');
+    el.className = 'phone' + (p.you ? ' you' : '') + (p.paused ? ' paused' : '');
     const a = answers[p.id];
     let body;
-    if (phase === 'onboard') body = p.you ? onboardScreen(p) : onboardedScreen(p);
+    if (p.paused) body = pausedScreen(p);
+    else if (phase === 'onboard') body = p.you ? onboardScreen(p) : onboardedScreen(p);
     else if (phase === 'after') {
       if (a !== true) body = notThereScreen(p);
       else if (allPicked()) body = nextScreen(p);
@@ -208,7 +240,7 @@ function render() {
     else body = cardScreen(p);
     el.innerHTML = `<div class="screen">
       <div class="sh"><b>${p.name}${p.you ? ' (you)' : ''}</b><span class="priv">only ${p.name} sees this</span></div>
-      <div class="body">${body}</div></div>`;
+      <div class="body">${body}${phase === 'after' && !p.paused ? weekHtml(p) : ''}</div></div>`;
     phones.appendChild(el);
   });
   phones.querySelectorAll('button[data-id]').forEach(b => b.onclick = () => decide(b.dataset.id, b.dataset.ok === '1'));
@@ -216,26 +248,31 @@ function render() {
   phones.querySelectorAll('button[data-send]').forEach(b => b.onclick = () => sendPicks(b.dataset.send));
   phones.querySelectorAll('button[data-chip]').forEach(b => b.onclick = () => { const arr = ob[b.dataset.set]; const v = b.dataset.chip; const k = arr.indexOf(v); k >= 0 ? arr.splice(k, 1) : arr.push(v); render(); });
   phones.querySelectorAll('button[data-ob]').forEach(b => b.onclick = () => obAction(b.dataset.ob));
+  phones.querySelectorAll('button[data-pair]').forEach(b => b.onclick = () => decidePair(b.dataset.pair, b.dataset.who, b.dataset.ok === '1'));
 
   btnSkip.disabled = phase !== 'onboard';
   btnAuto.disabled = phase === 'onboard';
 
   btnAfter.disabled = !(isOn && phase === 'ask');
-  btnAuto.textContent = phase === 'after' ? 'Let the others pick' : 'Let the others answer';
+  btnAuto.textContent = phase === 'after' && !allPicked() ? 'Let the others pick' : 'Let the others answer';
 
-  const y = yesCount(), n = noCount(), asked = PEOPLE.length - y - n;
+  const y = yesCount(), n = noCount(), asked = ACTIVE.length - y - n;
   if (phase === 'onboard') agentMsg.textContent = `Jonas is new. Four questions before the first proposal. The others answered them weeks ago. It takes a couple of minutes on purpose: people who skip it are the ones who flake.`;
   else if (phase === 'after') {
     if (allPicked()) {
       const pairs = mutualPairs();
-      agentMsg.textContent = pairs.length
+      if (pairs.length && !myPairsPending()) {
+        const w = weekFor(PEOPLE[0]);
+        const up = w.slice(1).map(i => i.what.toLowerCase() + ' ' + i.when.split(' ')[0]);
+        agentMsg.textContent = `Jonas went to jazz Friday${up.length ? ' and has ' + up.join(' and ') : ''}. He asked nobody, chased nobody, and nobody was turned down in public.`;
+      } else agentMsg.textContent = pairs.length
         ? `${pairs.length} mutual pick${pairs.length > 1 ? 's' : ''}. Nabo proposes something to each pair, as if it were its own idea. Picks that were not mutual are never mentioned to anyone.`
         : `No mutual picks. Nobody is told. Nabo keeps proposing groups.`;
     } else agentMsg.textContent = `Saturday morning. Nabo asks the ${y} who went who they'd like to see again. A pick is only revealed if it is mutual.`;
   }
   else if (isOn) agentMsg.textContent = `It's on. ${y} said yes, so Nabo told those ${y} it's happening and who's coming. ${n ? `${n} said no and ${n === 1 ? 'is' : 'are'} simply not mentioned.` : ''}`;
   else if (isDropped) agentMsg.textContent = `Only ${y} said yes, needs ${EVENT.need}. Nabo drops it quietly. Nobody is told who said what, and nobody feels rejected.`;
-  else if (asked === PEOPLE.length) agentMsg.textContent = `Asked all 4 the same way at the same time. Needs ${EVENT.need} yes to happen. Nobody is told what the others answered.`;
+  else if (asked === ACTIVE.length) agentMsg.textContent = `Asked all 4 the same way at the same time. Needs ${EVENT.need} yes to happen. Nobody is told what the others answered.`;
   else agentMsg.textContent = `${y} yes, ${n} no, ${asked} not answered yet. Still needs ${Math.max(0, EVENT.need - y)} more yes. Nobody is told this but you, the audience.`;
 }
 
@@ -305,6 +342,17 @@ function onScreen(p) {
     ${going.map(q => `<div class="who"><div class="av" style="background:${q.color}">${q.name[0]}</div><div><b>${q.name}${q.id === p.id ? ' (you)' : ''}</b><small>${bitsFor(q).join(' · ')}</small></div></div>`).join('')}
     <div class="fine">Nabo booked a table for ${going.length} and reminds everyone Friday afternoon. Nobody initiated this, so nobody is the host.</div>
   </div>`;
+}
+
+function pausedScreen(p) {
+  const line = phase === 'onboard' ? 'Nothing is proposed to you this week.'
+    : phase === 'ask' ? 'There was a spot for you Friday. It went to someone else.'
+    : 'Friday happened without you. Nobody there was told why.';
+  return `<div class="state"><div class="dot off"></div>
+    <h3>Paused</h3>
+    <p>You said yes to the climb last Thursday and didn't go. ${line}</p>
+    <p>Not anyone's opinion of you. Just a rule: a yes is a promise to the others.</p>
+    <p><b>Attend one thing and you're back.</b></p></div>`;
 }
 
 // ---- onboarding ----
@@ -401,11 +449,40 @@ function nextScreen(p) {
     <p>No mutual pick this time. Nobody knows who you picked, or whether anyone picked you. Nabo keeps proposing groups.</p></div>`;
   return `<div class="on">
     <h4>New from Nabo</h4>
-    ${mine.map(q => { const plan = PAIR_PLANS[pairKey(p.id, q.id)] || { what:'Coffee', when:'Tue 17:30' };
-      return `<div class="next"><div class="tag">You both picked each other</div><h2>${plan.what} with ${q.name}</h2><div class="when">${plan.when}</div>
-      <div class="why">${q.name} would like to see you again too. Nabo proposes this to both of you at once, as its own idea. A no is still private.</div></div>`; }).join('')}
+    ${mine.map(q => pairCard(p, q)).join('')}
     <div class="fine">Anyone you picked who didn't pick you is not mentioned, and never learns you picked them.</div>
   </div>`;
+}
+
+function pairCard(p, q) {
+  const key = pairKey(p.id, q.id);
+  const plan = PAIR_PLANS[key] || { what:'Coffee', when:'Tue 17:30' };
+  const me = pairAns(key, p.id), them = pairAns(key, q.id);
+  const head = `<h2>${plan.what} with ${q.name}</h2><div class="when">${plan.when}</div>`;
+  if (me === undefined) return `<div class="next"><div class="tag">You both picked each other</div>${head}
+    <div class="why">${q.name} would like to see you again too. Nabo proposes this to both of you at once. A no is still private.</div>
+    <div class="actions"><button class="no" data-pair="${key}" data-who="${p.id}" data-ok="0">No</button><button class="yes" data-pair="${key}" data-who="${p.id}" data-ok="1">Yes</button></div></div>`;
+  if (me === false) return `<div class="next off"><div class="tag">You passed</div>${head}
+    <div class="why">${q.name} is not told why, or that it was you. Nabo tries something else another week.</div></div>`;
+  if (them === undefined) return `<div class="next"><div class="tag">You said yes</div>${head}
+    <div class="why">Waiting for ${q.name}, who doesn't know you said yes.</div></div>`;
+  if (them === true) return `<div class="next done"><div class="tag">It's on ✓</div>${head}
+    <div class="why">Both said yes. Nabo put it in both your weeks and reminds you the morning of.</div></div>`;
+  return `<div class="next off"><div class="tag">Not this time</div>${head}
+    <div class="why">It didn't come together this week. Nabo tries again another time.</div></div>`;
+}
+
+function decidePair(key, who, ok) {
+  if (pairAns(key, who) !== undefined) return;
+  pairAnswers[key + ':' + who] = ok;
+  const [a, b] = key.split('|');
+  const other = who === a ? b : a;
+  const P = PEOPLE.find(x => x.id === who).name, Q = PEOPLE.find(x => x.id === other).name;
+  const plan = PAIR_PLANS[key];
+  log(`${P} said ${ok ? 'yes' : 'no'} to ${plan ? plan.what.toLowerCase() : 'coffee'} with ${Q}. Nabo told nobody.`, true);
+  if (pairOn(a, b)) log(`To ${P} and ${Q}: "${plan.what} ${plan.when} is on." Sent to both at once.`);
+  else if (pairAns(key, other) !== undefined && !pairOn(a, b)) log(`To ${ok ? P : Q}: "Not this time." No reason given, nobody named.`);
+  render();
 }
 
 function togglePick(me, other, btn) {
@@ -442,8 +519,8 @@ function decide(id, ok) {
   answers[id] = ok;
   const p = PEOPLE.find(x => x.id === id);
   log(`${p.name} said ${ok ? 'yes' : 'no'}. Nabo told nobody.`, true);
-  if (yesCount() >= EVENT.need && noCount() + yesCount() === PEOPLE.length) turnOn();
-  else if (Object.keys(answers).length === PEOPLE.length && yesCount() < EVENT.need) {
+  if (yesCount() >= EVENT.need && noCount() + yesCount() === ACTIVE.length) turnOn();
+  else if (Object.keys(answers).length === ACTIVE.length && yesCount() < EVENT.need) {
     isDropped = true;
     log(`To ${went().map(q => q.name).join(' and ')}: "Not this Friday, not enough could make it." Nobody is named.`);
   }
@@ -466,7 +543,11 @@ function morningAfter() {
 
 function auto() {
   timers.forEach(clearTimeout); timers = [];
-  if (phase === 'after') {
+  if (phase === 'after' && allPicked()) {
+    PAIR_SCRIPT.forEach(s => timers.push(setTimeout(() => {
+      went().filter(q => q.id !== s.id && mutual(s.id, q.id)).forEach(q => { const k = pairKey(s.id, q.id); if (pairAns(k, s.id) === undefined) decidePair(k, s.id, true); });
+    }, s.t)));
+  } else if (phase === 'after') {
     AFTER_SCRIPT.forEach(s => { if (answers[s.id] === true && picks[s.id] === undefined) timers.push(setTimeout(() => setPicks(s.id, s.ids.filter(i => answers[i] === true)), s.t)); });
   } else {
     SCRIPT.forEach(s => { if (answers[s.id] === undefined) timers.push(setTimeout(() => decide(s.id, s.ok), s.t)); });
@@ -475,7 +556,7 @@ function auto() {
 
 function reset() {
   timers.forEach(clearTimeout); timers = [];
-  answers = {}; isOn = false; isDropped = false; phase = 'onboard'; picks = {}; ledger.innerHTML = '';
+  answers = {}; isOn = false; isDropped = false; phase = 'onboard'; picks = {}; pairAnswers = {}; ledger.innerHTML = '';
   ob = { step:0, interests:[], evenings:[], photo:false, cal:false };
   log('Jonas signed up. Four questions before anything is proposed.');
   render();
