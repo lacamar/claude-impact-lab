@@ -147,14 +147,9 @@
 <div class="agent"><div class="bar"><b>Nabo</b><span id="agentMsg"></span></div></div>
 
 <div class="scan" id="scan"><div class="box">
-  <div class="sig"><h4>Reading, about people</h4><ul>
-    <li><b>4 people</b> open to suggestions near Grünerløkka</li>
-    <li>Interests, age, free evenings</li>
-    <li>Who they said yes to before, who they showed up for</li>
-    <li>Who they'd like to see again</li>
-  </ul></div>
-  <div><h4>Scanning what's on in Oslo this week</h4><ul class="feed" id="feed"></ul></div>
-  <div><div class="count"><span id="scanN">0</span><small>things found, time, place, organiser, nature, trust</small></div><div class="why" id="scanWhy"></div></div>
+  <div class="sig"><h4 id="sigH">Reading, about people</h4><ul id="sig"></ul></div>
+  <div><h4 id="feedH">Scanning what's on in Oslo this week</h4><ul class="feed" id="feed"></ul></div>
+  <div><div class="count"><span id="scanN">0</span><small id="countH">things found</small></div><div class="why" id="scanWhy"></div></div>
 </div></div>
 
 <div class="phones" id="phones"></div>
@@ -218,9 +213,9 @@ const AFTER_SCRIPT = [ {id:'sara', ids:['jonas','amina'], t:900}, {id:'amina', i
 
 // What Nabo proposes to a mutual pair. Keyed by sorted pair.
 const PAIR_PLANS = {
-  'jonas|sara':  { what:'Coffee',     when:'Tue 17:30 · near both your offices' },
-  'amina|sara':  { what:'Walk',       when:'Sun 11:00 · Ekebergparken' },
-  'amina|jonas': { what:'Photo walk', when:'Sat 12:00 · Bjørvika' },
+  'jonas|sara':  { what:'Coffee', when:'Tue 17:30 · Kafé Nordlys, Youngstorget', why:'9 minutes from both your offices, quiet, open till 20. You are both free Tuesday evenings, and you both said cooking, so it is the one with the good cardamom buns.' },
+  'amina|sara':  { what:'Walk',   when:'Sun 11:00 · Ekebergparken', why:'Both free Sunday mornings, 15 minutes from both of you, and Amina said yes to walks.' },
+  'amina|jonas': { what:'Photo walk', when:'Sat 12:00 · Bjørvika', why:'Both free Saturday, both said photography.' },
 };
 
 const phones = document.getElementById('phones');
@@ -304,9 +299,10 @@ function render() {
   else if (phase === 'after') {
     if (allPicked()) {
       const pairs = mutualPairs();
-      if (pairs.length && !myPairsPending()) {
+      if (pairs.length && !pairScanDone) { /* set by runScan */ }
+      else if (pairs.length && !myPairsPending()) {
         const w = weekFor(PEOPLE[0]);
-        const up = w.slice(1).map(i => i.what.toLowerCase() + ' ' + i.when.split(' ')[0]);
+        const up = w.slice(1).map(i => i.what.replace(/^\w+/, m => m.toLowerCase()) + ' ' + i.when.split(' ')[0]);
         agentMsg.textContent = `Jonas went to jazz Friday${up.length ? ' and has ' + up.join(' and ') : ''}. He asked nobody, chased nobody, and nobody was turned down in public.`;
       } else agentMsg.textContent = pairs.length
         ? `${pairs.length} mutual pick${pairs.length > 1 ? 's' : ''}. Nabo proposes something to each pair, as if it were its own idea. Picks that were not mutual are never mentioned to anyone.`
@@ -444,24 +440,60 @@ function obAction(a) {
   render();
 }
 
+function runScan(cfg, done) {
+  const panel = document.getElementById('scan'), feed = document.getElementById('feed'), nEl = document.getElementById('scanN'), why = document.getElementById('scanWhy');
+  document.getElementById('sigH').textContent = cfg.sigH;
+  document.getElementById('sig').innerHTML = cfg.sig.map(x => `<li>${x}</li>`).join('');
+  document.getElementById('feedH').textContent = cfg.feedH;
+  document.getElementById('countH').textContent = cfg.countH;
+  panel.classList.add('show'); feed.innerHTML = ''; why.innerHTML = ''; nEl.textContent = '0';
+  agentMsg.textContent = cfg.msg;
+  let n = 0;
+  const step = Math.ceil(cfg.total / 9);
+  const tick = setInterval(() => { n = Math.min(cfg.total, n + step); nEl.textContent = n; if (n >= cfg.total) clearInterval(tick); }, 120);
+  timers.push(tick);
+  cfg.feed.forEach((f, i) => timers.push(setTimeout(() => {
+    const li = document.createElement('li'); li.textContent = f.t; const sp = document.createElement('span'); sp.textContent = f.w; li.appendChild(sp);
+    feed.appendChild(li);
+    if (feed.children.length > 5) feed.removeChild(feed.firstChild);
+    if (f.r === 'pick') { li.className = 'pick'; why.innerHTML = cfg.why; }
+    else setTimeout(() => li.classList.add('skip'), 350);
+  }, 350 + i * 330)));
+  timers.push(setTimeout(() => { panel.classList.remove('show'); done(); }, 350 + cfg.feed.length * 330 + 1400));
+}
+
 function startScan() {
   if (phase !== 'onboard') return;
   phase = 'scan';
   render();
-  const panel = document.getElementById('scan'), feed = document.getElementById('feed'), nEl = document.getElementById('scanN'), why = document.getElementById('scanWhy');
-  panel.classList.add('show'); feed.innerHTML = ''; why.innerHTML = ''; nEl.textContent = '0';
-  agentMsg.textContent = 'Nobody creates events here. Nabo reads what is already on in Oslo and looks for one that fits four people at once.';
-  let n = 0;
-  const tick = setInterval(() => { n = Math.min(212, n + 23); nEl.textContent = n; if (n >= 212) clearInterval(tick); }, 120);
-  timers.push(tick);
-  FEED.forEach((f, i) => timers.push(setTimeout(() => {
-    const li = document.createElement('li'); li.textContent = f.t; const sp = document.createElement('span'); sp.textContent = f.w; li.appendChild(sp);
-    feed.appendChild(li);
-    if (feed.children.length > 5) feed.removeChild(feed.firstChild);
-    if (f.r === 'pick') { li.className = 'pick'; why.innerHTML = '<b>Picked.</b> Four people like jazz, all free Friday, none has flaked, two haven\'t met. Tickets left: 6.'; }
-    else setTimeout(() => li.classList.add('skip'), 350);
-  }, 350 + i * 330)));
-  timers.push(setTimeout(() => { panel.classList.remove('show'); startAsk(); }, 350 + FEED.length * 330 + 1400));
+  runScan({
+    sigH: 'Reading, about people',
+    sig: ['<b>4 people</b> open to suggestions near Grünerløkka', 'Interests, age, free evenings', 'Who they said yes to before, who they showed up for', 'Who they\'d like to see again'],
+    feedH: 'Scanning what\'s on in Oslo this week', feed: FEED, total: 212, countH: 'things found, time, place, organiser, nature, trust',
+    msg: 'Nobody creates events here. Nabo reads what is already on in Oslo and looks for one that fits four people at once.',
+    why: '<b>Picked.</b> Four people like jazz, all free Friday, none has flaked, two haven\'t met. Tickets left: 6.',
+  }, startAsk);
+}
+
+const PAIR_FEED = [
+  { t:'Big café by the station, loud, always full', w:'Tue', r:'skip' },
+  { t:'Wine bar on Løkka, closed Tuesdays', w:'Tue', r:'skip' },
+  { t:'Bakery near Sara, closes 17:00', w:'Tue', r:'skip' },
+  { t:'Kafé Nordlys, Youngstorget, quiet, open till 20', w:'Tue 17:30', r:'pick' },
+  { t:'Cocktail bar, too much for a first coffee', w:'Tue', r:'skip' },
+  { t:'Jazz café in Bjørvika, far from Sara', w:'Wed', r:'skip' },
+];
+
+let pairScanDone = false;
+function startPairScan() {
+  if (pairScanDone) return;
+  runScan({
+    sigH: 'Reading, about Jonas and Sara',
+    sig: ['Both said <b>jazz</b> and <b>cooking</b>', 'Jonas works in Bjørvika, Sara in Majorstuen', 'Both free <b>Tue</b> and Thu evenings', 'Sara likes small places'],
+    feedH: 'Looking for a place and a time', feed: PAIR_FEED, total: 14, countH: 'places near both, open at a time both are free',
+    msg: 'Two mutual picks. For each pair Nabo looks for a specific place and time that fits both, then proposes it to both at once.',
+    why: '<b>Picked.</b> 9 minutes from both offices, quiet, open Tuesday evening, both free at 17:30. Same done for Sara and Amina.',
+  }, () => { pairScanDone = true; log('Looked at 14 places near both Jonas and Sara. Picked Kafé Nordlys, Tue 17:30: close to both, quiet, open, both free.'); render(); });
 }
 
 function startAsk() {
@@ -508,6 +540,9 @@ function pickedWaitScreen(p) {
 
 function nextScreen(p) {
   const mine = went().filter(q => q.id !== p.id && mutual(p.id, q.id));
+  if (mine.length && !pairScanDone) return `<div class="state"><div class="dot wait"></div>
+    <h3>Someone picked you too</h3>
+    <p>Nabo is finding a place and a time that fit you both. Nobody is named until it has one.</p></div>`;
   if (!mine.length) return `<div class="state"><div class="dot"></div>
     <h3>Nothing yet</h3>
     <p>No mutual pick this time. Nobody knows who you picked, or whether anyone picked you. Nabo keeps proposing groups.</p></div>`;
@@ -524,7 +559,7 @@ function pairCard(p, q) {
   const me = pairAns(key, p.id), them = pairAns(key, q.id);
   const head = `<h2>${plan.what} with ${q.name}</h2><div class="when">${plan.when}</div>`;
   if (me === undefined) return `<div class="next"><div class="tag">You both picked each other</div>${head}
-    <div class="why">${q.name} would like to see you again too. Nabo proposes this to both of you at once. A no is still private.</div>
+    <div class="why">${q.name} would like to see you again too. ${plan.why || ''} Proposed to both of you at once. A no is still private.</div>
     <div class="actions"><button class="no" data-pair="${key}" data-who="${p.id}" data-ok="0">No</button><button class="yes" data-pair="${key}" data-who="${p.id}" data-ok="1">Yes</button></div></div>`;
   if (me === false) return `<div class="next off"><div class="tag">You passed</div>${head}
     <div class="why">${q.name} is not told why, or that it was you. Nabo tries something else another week.</div></div>`;
@@ -568,6 +603,7 @@ function setPicks(me, ids) {
   const names = ids.map(i => PEOPLE.find(x => x.id === i).name);
   log(`${p.name} picked ${names.length ? names.join(' and ') : 'no one'}. Nabo told nobody.`, true);
   if (allPicked()) {
+    if (mutualPairs().length) startPairScan();
     mutualPairs().forEach(([a, b]) => {
       const A = PEOPLE.find(x => x.id === a).name, B = PEOPLE.find(x => x.id === b).name;
       const plan = PAIR_PLANS[pairKey(a, b)];
@@ -607,6 +643,7 @@ function morningAfter() {
 
 function auto() {
   timers.forEach(clearTimeout); timers = [];
+  if (phase === 'after' && allPicked() && !pairScanDone) { return; }
   if (phase === 'after' && allPicked()) {
     PAIR_SCRIPT.forEach(s => timers.push(setTimeout(() => {
       went().filter(q => q.id !== s.id && mutual(s.id, q.id)).forEach(q => { const k = pairKey(s.id, q.id); if (pairAns(k, s.id) === undefined) decidePair(k, s.id, true); });
@@ -620,7 +657,7 @@ function auto() {
 
 function reset() {
   timers.forEach(clearTimeout); timers = [];
-  answers = {}; isOn = false; isDropped = false; phase = 'onboard'; picks = {}; pairAnswers = {}; ledger.innerHTML = '';
+  answers = {}; isOn = false; isDropped = false; phase = 'onboard'; picks = {}; pairAnswers = {}; pairScanDone = false; ledger.innerHTML = '';
   ob = { step:0, interests:[], evenings:[], photo:false, cal:false };
   document.getElementById('scan').classList.remove('show');
   log('Jonas signed up. Four questions before anything is proposed.');

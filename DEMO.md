@@ -50,7 +50,9 @@ Point at the left phone.
 
 > Saturday. Who would you like to see again? Jonas picks Sara. She doesn't know. Nobody ever sees a pick unless it's mutual.
 
-Press **Let the others pick**. Pair cards appear.
+Press **Let the others pick**. The dark panel comes back for a few seconds, now about Jonas and Sara: what they share, where each works, when both are free. Cafés stream past, one turns green. Then the pair cards appear with that café on them.
+
+> Same agent, smaller job. It picks a place nine minutes from both offices, quiet, open Tuesday evening, and a time both are free. Jonas never had to suggest anything.
 
 > Sara picked Jonas too, so Nabo proposes coffee Tuesday to both, as its own idea. Sara also picked Amina, and that was mutual too. Jonas is never told about that one.
 
