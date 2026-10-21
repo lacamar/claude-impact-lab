@@ -11,6 +11,8 @@ Say it in your own words. Roughly:
 > We heard it around this table today. New in the city, one-sided effort. Friends with kids and cabins. "Coffee sometime" that never happens. The thing that kills it is initiating and coordinating.
 >
 > So we moved the asking away from the person, onto an agent. Nobody has to ask. Nobody is turned down in public.
+>
+> And it is not Meetup. Nobody creates events on Nabo. The city is already full of things happening: gigs, climbing nights, volunteer shifts. Nabo scans them, picks people who fit, and sends them together.
 
 ## 2. Who it is for (30 seconds)
 
@@ -26,7 +28,7 @@ Point at the left phone.
 
 **The card.** The jazz card appears on four phones. Point at the why-you box.
 
-> Same card, same time, to four people who fit. Nobody organised it. No "maybe". If you say no, nobody knows you were asked.
+> This gig is on anyway. Nabo found it among a couple of hundred things in Oslo this week and picked four people who fit. Same card, same time, to all four. Nobody organised it. No "maybe". If you say no, nobody knows you were asked.
 
 **Jonas says yes.** Tap **Yes** on Jonas's phone.
 

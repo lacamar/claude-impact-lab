@@ -115,7 +115,7 @@
 <div class="top">
   <div>
     <h1>Nabo</h1>
-    <p>Nobody has to ask. Nabo picks people who fit, proposes one thing to all of them the same way, and only says it's on when enough said yes. A no stays private.</p>
+    <p>Nobody has to ask, and nobody creates events here. Nabo scans what is already happening in the city, picks people who fit, proposes one thing to all of them the same way, and only says it's on when enough said yes. A no stays private.</p>
   </div>
   <div class="ctl">
     <button id="btnSkip">Skip onboarding →</button>
@@ -137,21 +137,21 @@
 <script>
 // Made-up people and a made-up event. Four phones; the left one is "you".
 const EVENT = {
-  tag: 'Friday · proposed to 4 people',
+  tag: 'Found in the city · proposed to 4 people',
   title: 'Live jazz, then a drink',
-  when: 'Fri 20:00 · a small jazz bar on Grünerløkka',
+  when: 'Fri 20:00 · a small jazz bar on Grünerløkka · tickets at the door',
   need: 3,
 };
 
 const PEOPLE = [
   { id:'jonas', name:'Jonas', you:true,  color:'#d97706', bits:['New in Oslo since February','Jazz, cycling, cooking','Free most evenings'],
-    why:'Three people who match your interests are going. Nobody organised this; Nabo proposed it to all four of you.' },
+    why:'This gig is on anyway. Nabo found it and picked four people who fit, you among them. Nobody organised this.' },
   { id:'sara',  name:'Sara',  color:'#2e8b57', bits:['Moved here last year','Plays piano, likes small venues','Sunday climber'],
-    why:'Three people who like live music are going. You said you want to meet people outside work.' },
+    why:'This gig is on anyway. Three people who like live music are being asked too. You said you want to meet people outside work.' },
   { id:'erik',  name:'Erik',  color:'#5b6abf', bits:['Grew up in Oslo','Record collector','Shift worker, erratic weeks'],
-    why:'Three people who match your interests are going. You said Fridays are your best night.' },
+    why:'This gig is on anyway. Three people who match your interests are being asked too. You said Fridays are your best night.' },
   { id:'amina', name:'Amina', color:'#b83280', bits:['Two years in Oslo','Jazz and photography','Says yes to walks'],
-    why:'Three people who match your interests are going, one of them also into photography.' },
+    why:'This gig is on anyway. Three people who match your interests are being asked too, one of them also into photography.' },
   { id:'tomas', name:'Tomas', paused:true, color:'#7a7a7a', bits:['Said yes to a climb last Thursday','Did not go, did not cancel'], why:'' },
 ];
 const ACTIVE = PEOPLE.filter(p => !p.paused);
@@ -272,7 +272,7 @@ function render() {
   }
   else if (isOn) agentMsg.textContent = `It's on. ${y} said yes, so Nabo told those ${y} it's happening and who's coming. ${n ? `${n} said no and ${n === 1 ? 'is' : 'are'} simply not mentioned.` : ''}`;
   else if (isDropped) agentMsg.textContent = `Only ${y} said yes, needs ${EVENT.need}. Nabo drops it quietly. Nobody is told who said what, and nobody feels rejected.`;
-  else if (asked === ACTIVE.length) agentMsg.textContent = `Asked all 4 the same way at the same time. Needs ${EVENT.need} yes to happen. Nobody is told what the others answered.`;
+  else if (asked === ACTIVE.length) agentMsg.textContent = `Scanned 212 things happening in Oslo this week. Picked this gig for 4 people who fit and asked all 4 the same way at the same time. Needs ${EVENT.need} yes. Nobody is told what the others answered.`;
   else agentMsg.textContent = `${y} yes, ${n} no, ${asked} not answered yet. Still needs ${Math.max(0, EVENT.need - y)} more yes. Nobody is told this but you, the audience.`;
 }
 
@@ -289,7 +289,7 @@ function bitsFor(p) {
   return p.bits;
 }
 function whyFor(p) {
-  if (p.you && ob.interests.length) return `Three people who like ${ob.interests[0].toLowerCase()} are going, and you said you're free ${ob.evenings.some(e => e.startsWith('Fri')) ? 'Friday evenings' : ob.cal ? 'then, per your calendar' : 'on ' + ob.evenings[0].replace(' eve', ' evenings').replace(' day', 's')}. Nobody organised this; Nabo proposed it to all four of you.`;
+  if (p.you && ob.interests.length) return `This gig is on anyway. Nabo found it and picked four people who like ${ob.interests[0].toLowerCase()}, and you said you're free ${ob.evenings.some(e => e.startsWith('Fri')) ? 'Friday evenings' : ob.cal ? 'then, per your calendar' : 'on ' + ob.evenings[0].replace(' eve', ' evenings').replace(' day', 's')}. Nobody organised this.`;
   return p.why;
 }
 
@@ -340,7 +340,7 @@ function onScreen(p) {
     <div class="head"><b>Friday is on 🎷</b><span>${EVENT.when} · ${going.length} of you</span></div>
     <h4>Who's going</h4>
     ${going.map(q => `<div class="who"><div class="av" style="background:${q.color}">${q.name[0]}</div><div><b>${q.name}${q.id === p.id ? ' (you)' : ''}</b><small>${bitsFor(q).join(' · ')}</small></div></div>`).join('')}
-    <div class="fine">Nabo booked a table for ${going.length} and reminds everyone Friday afternoon. Nobody initiated this, so nobody is the host.</div>
+    <div class="fine">Nabo reserved ${going.length} tickets and reminds everyone Friday afternoon. The gig was happening anyway. Nobody initiated this, so nobody is the host.</div>
   </div>`;
 }
 
@@ -404,7 +404,8 @@ function obAction(a) {
 function startAsk() {
   if (phase !== 'onboard') return;
   phase = 'ask';
-  log('Proposed "Live jazz, then a drink, Fri 20:00" to Jonas, Sara, Erik and Amina. Same message to each, nobody named as the initiator.');
+  log('Scanned 212 things happening in Oslo this week: gigs, climbing nights, volunteer shifts, talks. Picked "Live jazz, then a drink, Fri 20:00" for 4 people who fit.');
+  log('Proposed it to Jonas, Sara, Erik and Amina. Same message to each, nobody named as the initiator.');
   render();
 }
 

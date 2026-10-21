@@ -148,3 +148,7 @@ Claude walked through the four steps as Jonas, someone who stopped asking. The t
 - **Flake phone.** A fifth phone, someone who said yes last week and didn't go, now paused. Worth showing.
 - **Demo script.** Wanted, one page, which button when.
 - **Be more ambitious.** The hosts keep asking for it. The team likes what it has and wants a bolder frame on top, not a different product.
+
+## Decision, 12:40
+
+- **Not Meetup: nobody creates events on Nabo.** The agent scans what is already happening in the city (gigs, climbing nights, volunteer shifts, talks) and sends people who fit to them, together. The only things Nabo creates itself are the small pair plans after a mutual pick. Wording on the card, the ledger and the demo script changed to say "found in the city".
