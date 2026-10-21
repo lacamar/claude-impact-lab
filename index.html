@@ -3,16 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nabo — The Autonomous Social Initiation Agent</title>
+<title>Nabo — Autonomous Social Initiation Agent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-warm: #f7f5ef;
+    --bg-warm: #f6f4ed;
     --surface: #ffffff;
-    --surface-glass: rgba(255, 255, 255, 0.85);
-    --border: #e6e2d8;
+    --surface-glass: rgba(255, 255, 255, 0.92);
+    --border: #e4dfd3;
+    --border-subtle: #eeebd0;
     --ink: #18181b;
     --ink-light: #52525b;
     --ink-faint: #a1a1aa;
@@ -23,7 +24,7 @@
     --success-soft: #d1fae5;
     --danger: #dc2626;
     --danger-soft: #fee2e2;
-    --console-bg: #0f172a;
+    --console-bg: #090d16;
     --console-border: #1e293b;
     --console-text: #e2e8f0;
     --console-muted: #64748b;
@@ -32,8 +33,8 @@
     --radius-lg: 24px;
     --radius-md: 14px;
     --radius-sm: 8px;
-    --shadow-card: 0 16px 36px -12px rgba(28, 25, 23, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.04);
-    --shadow-float: 0 20px 45px -10px rgba(0, 0, 0, 0.12);
+    --shadow-card: 0 16px 36px -12px rgba(28, 25, 23, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    --shadow-float: 0 20px 45px -10px rgba(0, 0, 0, 0.15);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -48,7 +49,7 @@
     overflow-x: hidden;
   }
 
-  /* Top Navigation & Hackathon Banner */
+  /* Navigation Bar */
   .top-bar {
     width: 100%;
     padding: 12px 24px;
@@ -65,67 +66,90 @@
   .brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
   .brand-logo {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     background: linear-gradient(135deg, #d97706, #f59e0b);
-    border-radius: 9px;
+    border-radius: 10px;
     display: grid;
     place-items: center;
     color: #fff;
     font-weight: 800;
-    font-size: 17px;
-    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+    font-size: 19px;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
   }
-  .brand-name {
-    font-weight: 700;
-    font-size: 18px;
+  .brand-text h1 {
+    font-weight: 800;
+    font-size: 19px;
     letter-spacing: -0.02em;
+    line-height: 1.1;
   }
   .brand-tagline {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--ink-light);
-    display: none;
-  }
-  @media (min-width: 768px) {
-    .brand-tagline { display: inline-block; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--border); }
   }
 
   .nav-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
-  .persona-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+
+  .nav-btn {
     background: var(--surface);
     border: 1px solid var(--border);
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 999px;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
   }
-  .persona-btn {
+  .nav-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .nav-btn.primary {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .nav-btn.primary:hover {
+    background: #27272a;
+    color: #fff;
+  }
+
+  .persona-switch {
+    display: flex;
+    background: #ebe7dc;
+    padding: 3px;
+    border-radius: 999px;
+    gap: 2px;
+  }
+  .persona-switch button {
     background: none;
     border: none;
-    cursor: pointer;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 999px;
     font-size: 12px;
     font-weight: 600;
     color: var(--ink-light);
-    transition: all 0.2s ease;
+    cursor: pointer;
+    transition: all 0.2s;
   }
-  .persona-btn.active {
-    background: var(--ink);
-    color: #fff;
+  .persona-switch button.active {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
   }
 
-  /* Main Split Layout */
+  /* Main Stage Layout */
   .main-stage {
     display: flex;
     flex: 1;
@@ -149,23 +173,23 @@
   /* Phone Mockup Frame */
   .phone-container {
     width: 100%;
-    max-width: 430px;
+    max-width: 440px;
     flex-shrink: 0;
   }
 
   .phone-frame {
-    background: #000;
-    border-radius: 46px;
+    background: #09090b;
+    border-radius: 48px;
     padding: 12px;
-    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.12);
     position: relative;
   }
 
   .phone-screen {
     background: var(--surface);
-    border-radius: 36px;
+    border-radius: 38px;
     overflow: hidden;
-    min-height: 780px;
+    min-height: 800px;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -174,7 +198,7 @@
 
   /* Dynamic Island Header */
   .dynamic-island {
-    width: 120px;
+    width: 130px;
     height: 28px;
     background: #000;
     border-radius: 20px;
@@ -182,12 +206,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 10px;
+    padding: 0 12px;
     color: #fff;
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 600;
   }
-  .island-dot {
+  .island-pulse {
     width: 8px;
     height: 8px;
     border-radius: 50%;
@@ -197,13 +221,13 @@
   }
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.85); }
+    50% { opacity: 0.4; transform: scale(0.8); }
   }
 
   .app-header {
-    padding: 16px 20px 10px;
+    padding: 16px 20px 8px;
   }
-  .app-header h1 {
+  .app-header h2 {
     font-size: 24px;
     font-weight: 800;
     letter-spacing: -0.03em;
@@ -215,9 +239,9 @@
     line-height: 1.4;
   }
 
-  /* Persona Context Bar inside App */
+  /* User Context Pill */
   .user-context-pill {
-    margin: 12px 20px 0;
+    margin: 10px 20px 0;
     background: var(--bg-warm);
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -227,44 +251,36 @@
     justify-content: space-between;
     font-size: 12px;
   }
-  .context-title {
-    font-weight: 700;
-    color: var(--ink);
-  }
-  .context-sub {
-    color: var(--ink-light);
-    font-size: 11px;
-  }
+  .context-title { font-weight: 700; color: var(--ink); }
+  .context-sub { color: var(--ink-light); font-size: 11px; margin-top: 1px; }
 
-  /* App Tabs */
+  /* App Tab Navigation */
   .tab-nav {
     display: flex;
-    gap: 6px;
-    padding: 10px 20px 0;
+    gap: 4px;
+    padding: 12px 20px 0;
     border-bottom: 1px solid var(--border);
   }
   .tab-btn {
     flex: 1;
-    padding: 10px 4px;
+    padding: 10px 2px;
     background: none;
     border: none;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--ink-light);
     cursor: pointer;
     position: relative;
     transition: color 0.2s;
   }
-  .tab-btn.active {
-    color: var(--accent);
-  }
+  .tab-btn.active { color: var(--accent); }
   .tab-btn.active::after {
     content: '';
     position: absolute;
     bottom: -1px;
     left: 10%;
     width: 80%;
-    height: 2px;
+    height: 2.5px;
     background: var(--accent);
     border-radius: 2px;
   }
@@ -273,17 +289,17 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 16px 20px 24px;
+    padding: 16px 20px 20px;
     position: relative;
     overflow-y: auto;
   }
 
-  /* Card Stack View */
+  /* Proposal Cards Stack */
   .card-stack {
     position: relative;
     width: 100%;
-    height: 480px;
-    margin: 6px 0 14px;
+    height: 500px;
+    margin: 6px 0 12px;
   }
 
   .proposal-card {
@@ -316,7 +332,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
   .tag-pill {
     font-size: 11px;
@@ -329,8 +345,9 @@
   .tag-pill.match { background: #fef3c7; color: #b45309; }
   .tag-pill.org { background: #e0e7ff; color: #4338ca; }
   .tag-pill.buddy { background: #d1fae5; color: #047857; }
+  .tag-pill.custom { background: #f3e8ff; color: #7e22ce; }
 
-  .safe-rejection-badge {
+  .safe-shield {
     font-size: 11px;
     color: var(--success);
     font-weight: 600;
@@ -340,7 +357,7 @@
   }
 
   .proposal-title {
-    font-size: 24px;
+    font-size: 23px;
     font-weight: 800;
     line-height: 1.18;
     color: var(--ink);
@@ -348,7 +365,7 @@
   }
 
   .proposal-meta {
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--ink-light);
     display: flex;
     align-items: center;
@@ -356,7 +373,6 @@
     margin-bottom: 14px;
   }
 
-  /* The "Why You" attribution box */
   .why-box {
     background: #fffbeb;
     border: 1px solid #fde68a;
@@ -380,7 +396,6 @@
     gap: 4px;
   }
 
-  /* Attendees and "Go as two" option */
   .attendees-row {
     margin-top: auto;
     display: flex;
@@ -389,10 +404,7 @@
     padding-top: 10px;
     border-top: 1px dashed var(--border);
   }
-  .avatar-group {
-    display: flex;
-    align-items: center;
-  }
+  .avatar-group { display: flex; align-items: center; }
   .avatar {
     width: 32px;
     height: 32px;
@@ -407,7 +419,6 @@
     margin-left: -8px;
   }
   .avatar:first-child { margin-left: 0; }
-  .avatar.add { background: #fef3c7; color: var(--accent); font-size: 14px; }
   .attendees-text {
     font-size: 12px;
     color: var(--ink-light);
@@ -435,8 +446,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
-    margin-top: 8px;
+    gap: 16px;
+    margin-top: 6px;
   }
   .circle-btn {
     width: 60px;
@@ -451,12 +462,8 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  .circle-btn:hover {
-    transform: scale(1.08);
-  }
-  .circle-btn:active {
-    transform: scale(0.95);
-  }
+  .circle-btn:hover { transform: scale(1.08); }
+  .circle-btn:active { transform: scale(0.95); }
   .circle-btn.no { color: var(--danger); }
   .circle-btn.no:hover { background: var(--danger-soft); border-color: var(--danger); }
   .circle-btn.yes { color: var(--success); }
@@ -466,9 +473,9 @@
     background: var(--bg-warm);
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 8px 16px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: 10px 18px;
+    font-size: 12.5px;
+    font-weight: 700;
     color: var(--ink-light);
     display: flex;
     align-items: center;
@@ -489,40 +496,7 @@
     margin-top: 10px;
   }
 
-  /* Empty / Done View */
-  .done-state {
-    text-align: center;
-    padding: 40px 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-  }
-  .done-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--success-soft);
-    color: var(--success);
-    display: grid;
-    place-items: center;
-    font-size: 26px;
-    margin-bottom: 16px;
-  }
-  .done-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .done-desc {
-    font-size: 13.5px;
-    color: var(--ink-light);
-    line-height: 1.5;
-    max-width: 280px;
-  }
-
-  /* Calendar / Schedule Tab */
+  /* Schedule List View */
   .schedule-list {
     display: flex;
     flex-direction: column;
@@ -553,31 +527,31 @@
     font-size: 13px;
     color: var(--ink-light);
   }
-  .schedule-tag {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    font-size: 11px;
-    background: #f1f5f9;
-    padding: 2px 8px;
+  .schedule-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .cal-btn {
+    padding: 5px 10px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
     border-radius: 6px;
+    font-size: 11.5px;
     font-weight: 600;
-    color: var(--ink-light);
+    color: #334155;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s;
   }
+  .cal-btn:hover { background: #e2e8f0; color: #0f172a; }
 
-  /* Past / Recurrence Feedback Tab */
-  .feedback-header {
-    margin-bottom: 14px;
-  }
-  .feedback-title {
-    font-size: 16px;
-    font-weight: 700;
-  }
-  .feedback-sub {
-    font-size: 12px;
-    color: var(--ink-light);
-    margin-top: 2px;
-  }
+  /* Recurrence Loop View */
   .past-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -623,46 +597,102 @@
     border-radius: 6px;
     padding: 4px 8px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     transition: all 0.2s;
   }
   .like-btn.liked {
     background: #fef3c7;
     border-color: #f59e0b;
     color: #b45309;
+    font-weight: 700;
   }
 
-  /* Toast Notification */
-  .toast {
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(30px);
-    background: var(--ink);
-    color: #fff;
-    padding: 10px 18px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 200;
-    white-space: nowrap;
-    max-width: 90%;
-    text-overflow: ellipsis;
+  /* Modal Form (Intake / Add New Intent or Contact) */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    display: none;
+    place-items: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: grid; }
+  .modal-window {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 520px;
+    box-shadow: var(--shadow-float);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlide 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+  @keyframes modalSlide {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-top {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-top h3 { font-size: 18px; font-weight: 800; }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--ink-light);
+  }
+  .modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 75vh;
+    overflow-y: auto;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-group label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .form-group input, .form-group textarea, .form-group select {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    outline: none;
+    background: #fafaf9;
+  }
+  .form-group input:focus, .form-group textarea:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+  .modal-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #fafaf9;
   }
 
-  /* RIGHT COLUMN: Live Agent Telemetry Console */
+  /* Right Column: Live Autonomous Agent Console */
   .agent-console-container {
     flex: 1;
-    min-width: 380px;
+    min-width: 400px;
     background: var(--console-bg);
     border: 1px solid var(--console-border);
     border-radius: var(--radius-lg);
@@ -670,13 +700,13 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    height: 780px;
+    height: 800px;
     color: var(--console-text);
   }
 
   .console-top {
     padding: 14px 18px;
-    background: #1e293b;
+    background: #111827;
     border-bottom: 1px solid var(--console-border);
     display: flex;
     justify-content: space-between;
@@ -687,18 +717,19 @@
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.03em;
   }
   .console-pulse {
-    width: 8px;
-    height: 8px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     background: var(--console-green);
     box-shadow: 0 0 10px var(--console-green);
   }
   .console-title {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+    font-size: 11.5px;
     color: var(--console-muted);
   }
 
@@ -706,7 +737,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     border-bottom: 1px solid var(--console-border);
-    background: #0b1120;
+    background: #090e17;
   }
   .stat-box {
     padding: 12px 16px;
@@ -716,7 +747,7 @@
   .stat-val {
     font-family: 'JetBrains Mono', monospace;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--console-cyan);
   }
   .stat-lbl {
@@ -732,7 +763,7 @@
     overflow-y: auto;
     padding: 16px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
+    font-size: 12px;
     line-height: 1.6;
     display: flex;
     flex-direction: column;
@@ -741,25 +772,23 @@
   .log-entry {
     border-left: 2px solid #334155;
     padding-left: 10px;
-    transition: all 0.2s ease;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-4px); }
+    to { opacity: 1; transform: translateX(0); }
   }
   .log-entry.active {
     border-left-color: var(--console-cyan);
-    background: rgba(56, 189, 248, 0.05);
+    background: rgba(56, 189, 248, 0.06);
   }
-  .log-entry.success {
-    border-left-color: var(--console-green);
-  }
-  .log-entry.private {
-    border-left-color: #a855f7;
-  }
-  .log-time {
-    color: var(--console-muted);
-    font-size: 10.5px;
-    margin-right: 6px;
-  }
+  .log-entry.success { border-left-color: var(--console-green); }
+  .log-entry.shield { border-left-color: #a855f7; }
+  .log-entry.intake { border-left-color: #f59e0b; }
+
+  .log-time { color: var(--console-muted); font-size: 10.5px; margin-right: 6px; }
   .log-tag {
-    font-weight: 600;
+    font-weight: 700;
     padding: 1px 6px;
     border-radius: 4px;
     font-size: 10.5px;
@@ -769,13 +798,63 @@
   .tag-match { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
   .tag-coord { background: rgba(74, 222, 128, 0.2); color: var(--console-green); }
   .tag-shield { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+  .tag-cal { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
 
-  /* Pitch Summary Banner at Footer */
+  /* Toast Notification */
+  .toast {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 200;
+    white-space: nowrap;
+    max-width: 90%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .done-state {
+    text-align: center;
+    padding: 40px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  .done-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--success-soft);
+    color: var(--success);
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    margin-bottom: 16px;
+  }
+  .done-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .done-desc { font-size: 13.5px; color: var(--ink-light); line-height: 1.5; max-width: 290px; }
+
+  /* Footer */
   .pitch-banner {
     background: #fff;
     border-top: 1px solid var(--border);
-    padding: 16px 24px;
-    margin-top: auto;
+    padding: 14px 24px;
     font-size: 13px;
     color: var(--ink-light);
     display: flex;
@@ -784,80 +863,78 @@
     flex-wrap: wrap;
     gap: 12px;
   }
-  .pitch-badge {
-    background: #f1f5f9;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-weight: 600;
-    color: var(--ink);
-  }
 </style>
 </head>
 <body>
 
-<!-- Top Navigation -->
+<!-- Top App Bar -->
 <nav class="top-bar">
   <div class="brand">
     <div class="brand-logo">N</div>
-    <div>
-      <div class="brand-name">Nabo</div>
+    <div class="brand-text">
+      <h1>Nabo</h1>
+      <div class="brand-tagline">Autonomous Social Initiation Agent · Oslo Hackathon MVP</div>
     </div>
-    <span class="brand-tagline">The Autonomous Initiation Agent · Claude Impact Lab Oslo</span>
   </div>
 
   <div class="nav-controls">
-    <div class="persona-badge">
-      <span>Perspective:</span>
-      <button class="persona-btn active" id="btnPersonaJonas" onclick="switchPersona('jonas')">Jonas (Newcomer)</button>
-      <button class="persona-btn" id="btnPersonaKari" onclick="switchPersona('kari')">Kari (Organizer)</button>
+    <button class="nav-btn primary" onclick="openIntakeModal()">
+      <span>＋</span> Add Intent / Contact
+    </button>
+    <div class="persona-switch">
+      <button class="active" id="btnJonas" onclick="setPersona('jonas')">Jonas</button>
+      <button id="btnKari" onclick="setPersona('kari')">Kari</button>
     </div>
+    <button class="nav-btn" onclick="resetToDefaults()" title="Reset to default demo data">
+      <span>↺</span> Reset
+    </button>
   </div>
 </nav>
 
-<!-- Main Stage Split View -->
+<!-- Main Stage View -->
 <main class="main-stage">
   
-  <!-- Left Side: Interactive Phone Preview -->
+  <!-- Left Side: Phone UI Cockpit -->
   <div class="phone-container">
     <div class="phone-frame">
       <div class="phone-screen">
         
         <!-- Dynamic Island status -->
         <div class="dynamic-island">
-          <div class="island-dot"></div>
-          <span>Nabo Agent Active</span>
+          <div class="island-pulse"></div>
+          <span>Nabo Matcher Active</span>
         </div>
 
         <div class="app-header">
-          <h1 id="appHeaderTitle">Hey Jonas</h1>
-          <p class="app-sub" id="appHeaderSub">Nabo handled the awkward "coffee sometime" coordination. Here are 5 invitations waiting for your nod.</p>
+          <h2 id="headerGreeting">Hey Jonas</h2>
+          <p class="app-sub" id="headerSub">Nabo coordinates informal hangouts in the background so you never face the awkwardness of asking or being turned down.</p>
         </div>
 
         <!-- User Context Pill -->
         <div class="user-context-pill">
           <div>
-            <div class="context-title" id="contextName">Jonas · New in Grünerløkka</div>
-            <div class="context-sub" id="contextDetails">Free Thu eve, Sat afternoon · Jazz, Dogs, Cycling</div>
+            <div class="context-title" id="contextTitle">Jonas · New in Grünerløkka</div>
+            <div class="context-sub" id="contextSub">Free Thu eve, Sat afternoon · Jazz, Dogs, Cycling</div>
           </div>
           <span style="font-size:18px">📍</span>
         </div>
 
-        <!-- Tabs -->
+        <!-- Navigation Tabs -->
         <div class="tab-nav">
-          <button class="tab-btn active" id="tabProposals" onclick="switchTab('proposals')">Proposals <span id="propCountBadge">(5)</span></button>
-          <button class="tab-btn" id="tabSchedule" onclick="switchTab('schedule')">Your Week <span id="scheduleCountBadge">(0)</span></button>
-          <button class="tab-btn" id="tabRecurrence" onclick="switchTab('recurrence')">Recurrence Loop</button>
+          <button class="tab-btn active" id="tabProposals" onclick="switchTab('proposals')">Proposals <span id="badgeProposals">(0)</span></button>
+          <button class="tab-btn" id="tabSchedule" onclick="switchTab('schedule')">Your Week <span id="badgeSchedule">(0)</span></button>
+          <button class="tab-btn" id="tabRecurrence" onclick="switchTab('recurrence')">Recurrence</button>
         </div>
 
-        <!-- Tab 1: Proposals Card Deck -->
+        <!-- Tab 1: Proposals View -->
         <div class="tab-content" id="viewProposals">
           <div class="card-stack" id="stack">
-            <!-- Dynamic Cards injected here -->
+            <!-- Dynamic Proposal Cards -->
           </div>
 
           <div class="action-bar" id="actionBar">
             <button class="circle-btn no" id="btnNo" title="Decline Privately (✕)" aria-label="Decline">✕</button>
-            <button class="buddy-action-btn" id="btnBuddy" onclick="handleBuddyPrompt()">
+            <button class="buddy-action-btn" id="btnBuddy" onclick="handleBuddyAction()">
               <span>👥</span> Go as two
             </button>
             <button class="circle-btn yes" id="btnYes" title="Accept Proposal (✓)" aria-label="Accept">✓</button>
@@ -865,276 +942,390 @@
           <div class="swipe-hint">Drag card, press ← / →, or tap buttons. Declining is 100% private.</div>
         </div>
 
-        <!-- Tab 2: Your Week Schedule -->
+        <!-- Tab 2: Your Week Schedule View -->
         <div class="tab-content" id="viewSchedule" style="display:none;">
           <div class="schedule-list" id="scheduleList">
-            <div class="done-state">
-              <div class="done-icon">📅</div>
-              <div class="done-title">No confirmed hangouts yet</div>
-              <div class="done-desc">Say "Yes" to proposals or pair up on a community activity to build your week without awkward texting.</div>
-            </div>
+            <!-- Rendered Confirmed Schedule -->
           </div>
         </div>
 
-        <!-- Tab 3: Post-Event Recurrence Loop -->
+        <!-- Tab 3: Post-Event Recurrence Loop View -->
         <div class="tab-content" id="viewRecurrence" style="display:none;">
-          <div class="feedback-header">
-            <div class="feedback-title">Past Hangout Feedback</div>
-            <div class="feedback-sub">Nabo asks: Who did you click with? Mutual thumbs-up triggers repeat low-pressure hangouts. Completely anonymous.</div>
-          </div>
-
-          <div class="past-card">
-            <div class="schedule-time" style="color:var(--ink-light)">Completed · Tuesday 18:00</div>
-            <div class="schedule-title">Coffee at Tim Wendelboe</div>
-            <div class="schedule-loc">Grünerløkka · 3 attendees</div>
-
-            <div class="past-attendees-grid">
-              <div class="person-rating">
-                <div class="person-info">
-                  <div class="person-avatar">M</div>
-                  <span>Mia K.</span>
-                </div>
-                <button class="like-btn" id="likeMia" onclick="toggleAffinity('Mia K.', this)">👍 See again</button>
-              </div>
-              <div class="person-rating">
-                <div class="person-info">
-                  <div class="person-avatar">L</div>
-                  <span>Lars T.</span>
-                </div>
-                <button class="like-btn" id="likeLars" onclick="toggleAffinity('Lars T.', this)">👍 See again</button>
-              </div>
+          <div style="margin-bottom:12px;">
+            <div style="font-size:15px; font-weight:800;">Post-Hangout Feedback</div>
+            <div style="font-size:12px; color:var(--ink-light); margin-top:2px;">
+              Who did you click with? Mutual thumbs-up triggers repeat low-pressure meetup proposals. Completely anonymous.
             </div>
           </div>
 
-          <div class="past-card" style="margin-top:12px;">
-            <div class="schedule-time" style="color:var(--ink-light)">Completed · Last Saturday</div>
-            <div class="schedule-title">Maridalen Autumn Cycling</div>
-            <div class="schedule-loc">Maridalen · 4 attendees</div>
-            <div class="past-attendees-grid">
-              <div class="person-rating">
-                <div class="person-info">
-                  <div class="person-avatar">E</div>
-                  <span>Erik S.</span>
-                </div>
-                <button class="like-btn liked" onclick="toggleAffinity('Erik S.', this)">❤️ Matched</button>
-              </div>
-              <div class="person-rating">
-                <div class="person-info">
-                  <div class="person-avatar">P</div>
-                  <span>Per O.</span>
-                </div>
-                <button class="like-btn" onclick="toggleAffinity('Per O.', this)">👍 See again</button>
-              </div>
-            </div>
+          <div id="pastEventsList">
+            <!-- Rendered Past Events -->
           </div>
         </div>
 
-        <!-- Dynamic Toast -->
+        <!-- In-App Floating Toast -->
         <div class="toast" id="toast"></div>
 
       </div>
     </div>
   </div>
 
-  <!-- Right Side: Live Autonomous Agent Operations Console -->
+  <!-- Right Side: Autonomous Agent Operations Console -->
   <div class="agent-console-container">
     <div class="console-top">
       <div class="console-status">
         <div class="console-pulse"></div>
-        <span>NABO AGENT REASONING ENGINE</span>
+        <span>AUTONOMOUS AGENT REASONING ENGINE</span>
       </div>
-      <div class="console-title">v2.4 · LIVE TELEMETRY</div>
+      <div class="console-title">v3.0 MVP · LOCAL RUNTIME</div>
     </div>
 
-    <!-- Agent Activity KPIs -->
+    <!-- Agent Operational KPIs -->
     <div class="console-stats">
       <div class="stat-box">
-        <div class="stat-val" id="statInitiations">14</div>
-        <div class="stat-lbl">Coord. Initiated</div>
+        <div class="stat-val" id="statInitiations">0</div>
+        <div class="stat-lbl">Parsed Intents</div>
       </div>
       <div class="stat-box">
-        <div class="stat-val" id="statSocialShield">100%</div>
-        <div class="stat-lbl">Zero Rejection Risk</div>
+        <div class="stat-val" id="statDeclines">0</div>
+        <div class="stat-lbl">Shielded Declines</div>
       </div>
       <div class="stat-box">
-        <div class="stat-val" id="statMatches">4 Confirmed</div>
-        <div class="stat-lbl">Double Opt-Ins</div>
+        <div class="stat-val" id="statConfirmed">0</div>
+        <div class="stat-lbl">Confirmed Hangouts</div>
       </div>
     </div>
 
-    <!-- Live Telemetry Stream -->
+    <!-- Telemetry Log Stream -->
     <div class="console-stream" id="consoleStream">
-      <!-- Agent entries streamed here -->
+      <!-- Live agent events logged here -->
     </div>
   </div>
 
 </main>
 
-<!-- Footer Pitch Summary -->
+<!-- Modal: Intake Form (Add Contact or New Intent) -->
+<div class="modal-overlay" id="intakeModal">
+  <div class="modal-window">
+    <div class="modal-top">
+      <h3 id="modalHeading">Add New Social Intent or Contact</h3>
+      <button class="modal-close" onclick="closeIntakeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Intake Type</label>
+        <select id="intakeType" onchange="toggleIntakeFields()">
+          <option value="intent">Hangout Intent (e.g. "Coffee with Alex", "Padel game")</option>
+          <option value="volunteer">Community / Org Request (e.g. "Move piano", "Garden help")</option>
+          <option value="contact">New "Sometime" Contact (e.g. "Met Sarah at meetup")</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="groupTitle">
+        <label id="lblTitle">Activity or Title</label>
+        <input type="text" id="inpTitle" placeholder="e.g. Specialty Coffee at Fuglen">
+      </div>
+
+      <div class="form-group" id="groupPartner">
+        <label id="lblPartner">With Contact / Host</label>
+        <input type="text" id="inpPartner" placeholder="e.g. Alex M. or Sofienberg Club">
+      </div>
+
+      <div class="form-group" id="groupWhen">
+        <label>Proposed Time & Day</label>
+        <input type="text" id="inpWhen" placeholder="e.g. Thu 18:00 · Near Youngstorget">
+      </div>
+
+      <div class="form-group">
+        <label>Trigger / Context / Why</label>
+        <textarea id="inpWhy" rows="3" placeholder="e.g. You both promised coffee last week. Alex is free Thursday. Nabo reaches out so you don't have to."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Interests / Tags (comma separated)</label>
+        <input type="text" id="inpTags" placeholder="e.g. coffee, jazz, outdoor">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="nav-btn" onclick="closeIntakeModal()">Cancel</button>
+      <button class="nav-btn primary" onclick="submitIntake()">Dispatch to Nabo Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
 <footer class="pitch-banner">
   <div>
-    <strong>Claude Impact Lab Oslo:</strong> Team Nabo — <em>"Lowering the cost of initiation. People give up on coordination before they give up on each other."</em>
+    <strong>Claude Impact Lab Oslo:</strong> Team Nabo — <em>"People give up on coordination long before they give up on each other."</em>
   </div>
-  <div style="display:flex; gap:10px;">
-    <span class="pitch-badge">Presentation at 13:15</span>
-    <span class="pitch-badge" style="background:var(--success-soft); color:var(--success);">Demo Ready</span>
+  <div style="display:flex; gap:10px; align-items:center;">
+    <a href="PITCH.md" target="_blank" style="color:var(--accent); font-weight:700; text-decoration:none;">📄 View 5-Min Pitch Script</a>
+    <span style="background:var(--success-soft); color:var(--success); padding:3px 10px; border-radius:6px; font-weight:700;">MVP Functional</span>
   </div>
 </footer>
 
 <script>
-// Data store for personas and proposals
-const personas = {
-  jonas: {
-    name: 'Jonas',
-    role: 'Newcomer to Oslo',
-    bio: 'Jonas · New in Grünerløkka',
-    details: 'Free Thu eve, Sat afternoon · Jazz, Dogs, Cycling',
-    sub: 'Nabo handled the awkward "coffee sometime" coordination. Here are 5 invitations waiting for your nod.',
-    proposals: [
-      {
-        id: 'prop-1',
-        tag: 'Mutual Coffee Promise',
-        tagClass: 'match',
-        title: 'Coffee with Mia',
-        when: 'Thu 17:30 · Tim Wendelboe',
-        why: 'You both said "coffee sometime" at the meetup 3 weeks ago. Nabo checked Mia\'s calendar, she agreed to Thursday 17:30. Nabo asks you now. If you decline, she will never know you were asked.',
-        attendees: ['M'],
-        attendeeNames: ['Mia K.'],
-        isOrg: false,
-        canBuddy: false
-      },
-      {
-        id: 'prop-2',
-        tag: 'Live Music Buddy',
-        tagClass: 'match',
-        title: 'Jazz at Blå with Erik',
-        when: 'Thu 20:00 · Blå (Brenneriveien)',
-        why: 'Erik mentioned Blå at work. You both have jazz tagged. Nabo confirmed Erik is free and reserved a table. A single tap confirms.',
-        attendees: ['E'],
-        attendeeNames: ['Erik S.'],
-        isOrg: false,
-        canBuddy: false
-      },
-      {
-        id: 'prop-3',
-        tag: 'Community Request · Low Pressure',
-        tagClass: 'org',
-        title: 'Move a Piano, then Waffles',
-        when: 'Sat 14:00 · Sofienberg Music School',
-        why: 'Kari needs 4 volunteers for 45 mins. 3 have accepted. You mentioned wanting to meet neighbours while doing something useful. Free waffles after.',
-        attendees: ['K', 'A', 'T'],
-        attendeeNames: ['Kari (Host)', 'Amina', 'Tor'],
-        isOrg: true,
-        canBuddy: true
-      },
-      {
-        id: 'prop-4',
-        tag: 'Recurrence Signal',
-        tagClass: 'buddy',
-        title: 'Walk Shelter Dogs with Mia',
-        when: 'Sat 11:00 · Dyrebeskyttelsen Oslo',
-        why: 'You both gave mutual positive feedback after coffee, and both love dogs. Nabo proposes this low-pressure second meetup so nobody had to build courage to ask.',
-        attendees: ['M'],
-        attendeeNames: ['Mia K.'],
-        isOrg: false,
-        canBuddy: true
-      },
-      {
-        id: 'prop-5',
-        tag: 'Group Hangout',
-        tagClass: 'match',
-        title: 'Sunday Gravel Ride to Maridalen',
-        when: 'Sun 10:00 · 32 km, easy pace',
-        why: 'Per and Lina said "join our Sunday ride sometime". Nabo matched the first weekend where weather is dry and all 3 are free.',
-        attendees: ['P', 'L'],
-        attendeeNames: ['Per', 'Lina'],
-        isOrg: false,
-        canBuddy: true
-      }
-    ]
+// --- LOCAL STORAGE KEY & DEFAULT DATA SEED ---
+const STORAGE_KEY = 'nabo_impact_lab_mvp_v3';
+
+const defaultState = {
+  currentPersona: 'jonas',
+  stats: {
+    initiations: 5,
+    declines: 0,
+    confirmed: 0
   },
-  kari: {
-    name: 'Kari',
-    role: 'Community Organizer',
-    bio: 'Kari · Sofienberg Volunteer Lead',
-    details: 'Coordinating music school & neighborhood repairs',
-    sub: 'Nabo dispatched volunteer needs without broadcast spam. View responses and matched buddies.',
-    proposals: [
-      {
-        id: 'kari-1',
-        tag: 'Volunteer Match Found',
-        tagClass: 'org',
-        title: 'Piano Moving Crew',
-        when: 'Sat 14:00 · Sofienberg Music School',
-        why: 'Nabo reached out to 6 neighbors with high physical fitness and free Saturday afternoons. Jonas, Amina, and Tor accepted privately.',
-        attendees: ['J', 'A', 'T'],
-        attendeeNames: ['Jonas', 'Amina', 'Tor'],
-        isOrg: true,
-        canBuddy: false
-      },
-      {
-        id: 'kari-2',
-        tag: 'Youth Mentoring',
-        tagClass: 'match',
-        title: 'Coding Workshop Assistant',
-        when: 'Next Tue 16:30 · Deichman Grünerløkka',
-        why: 'Nabo matched 2 local software developers who indicated an interest in volunteering with kids. Both opted in.',
-        attendees: ['S', 'M'],
-        attendeeNames: ['Sofia', 'Morten'],
-        isOrg: true,
-        canBuddy: true
-      }
-    ]
-  }
+  personas: {
+    jonas: {
+      name: 'Jonas',
+      role: 'Newcomer in Oslo',
+      bio: 'Jonas · New in Grünerløkka',
+      details: 'Free Thu eve, Sat afternoon · Jazz, Dogs, Cycling',
+      sub: 'Nabo coordinates informal hangouts in the background so you never face the awkwardness of asking or being turned down.',
+      proposals: [
+        {
+          id: 'prop-1',
+          tag: 'Mutual Coffee Promise',
+          tagClass: 'match',
+          title: 'Coffee with Mia',
+          when: 'Thu 17:30 · Tim Wendelboe',
+          why: 'You both said "coffee sometime" at the meetup 3 weeks ago. Nabo checked Mia\'s calendar, she agreed to Thursday 17:30. Nabo asks you now. If you decline, she will never know you were asked.',
+          attendees: ['M'],
+          attendeeNames: ['Mia K.'],
+          isOrg: false,
+          canBuddy: false
+        },
+        {
+          id: 'prop-2',
+          tag: 'Live Music Buddy',
+          tagClass: 'match',
+          title: 'Jazz at Blå with Erik',
+          when: 'Thu 20:00 · Blå (Brenneriveien)',
+          why: 'Erik mentioned Blå at work. You both have jazz tagged. Nabo confirmed Erik is free and reserved a table. A single tap confirms.',
+          attendees: ['E'],
+          attendeeNames: ['Erik S.'],
+          isOrg: false,
+          canBuddy: false
+        },
+        {
+          id: 'prop-3',
+          tag: 'Community · Low Pressure',
+          tagClass: 'org',
+          title: 'Move a Piano, then Waffles',
+          when: 'Sat 14:00 · Sofienberg Music School',
+          why: 'Kari needs 4 volunteers for 45 mins. 3 have accepted. You mentioned wanting to meet neighbours while doing something useful. Free waffles after.',
+          attendees: ['K', 'A', 'T'],
+          attendeeNames: ['Kari (Host)', 'Amina', 'Tor'],
+          isOrg: true,
+          canBuddy: true
+        },
+        {
+          id: 'prop-4',
+          tag: 'Recurrence Flywheel',
+          tagClass: 'buddy',
+          title: 'Walk Shelter Dogs with Mia',
+          when: 'Sat 11:00 · Dyrebeskyttelsen Oslo',
+          why: 'You both gave mutual positive feedback after coffee, and both love dogs. Nabo proposes this low-pressure second meetup so nobody had to build courage to ask.',
+          attendees: ['M'],
+          attendeeNames: ['Mia K.'],
+          isOrg: false,
+          canBuddy: true
+        },
+        {
+          id: 'prop-5',
+          tag: 'Group Ride',
+          tagClass: 'match',
+          title: 'Sunday Gravel Ride to Maridalen',
+          when: 'Sun 10:00 · 32 km, easy pace',
+          why: 'Per and Lina said "join our Sunday ride sometime". Nabo matched the first weekend where weather is dry and all 3 are free.',
+          attendees: ['P', 'L'],
+          attendeeNames: ['Per', 'Lina'],
+          isOrg: false,
+          canBuddy: true
+        }
+      ],
+      schedule: [],
+      pastEvents: [
+        {
+          id: 'past-1',
+          title: 'Coffee at Tim Wendelboe',
+          when: 'Completed · Tuesday 18:00',
+          location: 'Grünerløkka',
+          attendees: [
+            { name: 'Mia K.', avatar: 'M', liked: true },
+            { name: 'Lars T.', avatar: 'L', liked: false }
+          ]
+        },
+        {
+          id: 'past-2',
+          title: 'Maridalen Autumn Cycling',
+          when: 'Completed · Last Saturday',
+          location: 'Maridalen',
+          attendees: [
+            { name: 'Erik S.', avatar: 'E', liked: true },
+            { name: 'Per O.', avatar: 'P', liked: false }
+          ]
+        }
+      ]
+    },
+    kari: {
+      name: 'Kari',
+      role: 'Community Organizer',
+      bio: 'Kari · Sofienberg Volunteer Lead',
+      details: 'Coordinating music school & neighborhood repairs',
+      sub: 'Nabo dispatched volunteer needs without broadcast spam. View responses and matched buddies.',
+      proposals: [
+        {
+          id: 'kari-1',
+          tag: 'Volunteer Match Found',
+          tagClass: 'org',
+          title: 'Piano Moving Crew',
+          when: 'Sat 14:00 · Sofienberg Music School',
+          why: 'Nabo reached out to 6 neighbours with physical strength and free Saturday afternoons. Jonas, Amina, and Tor accepted privately.',
+          attendees: ['J', 'A', 'T'],
+          attendeeNames: ['Jonas', 'Amina', 'Tor'],
+          isOrg: true,
+          canBuddy: false
+        },
+        {
+          id: 'kari-2',
+          tag: 'Youth Mentoring',
+          tagClass: 'match',
+          title: 'Coding Workshop Assistant',
+          when: 'Next Tue 16:30 · Deichman Grünerløkka',
+          why: 'Nabo matched 2 local software developers who indicated an interest in volunteering with kids. Both opted in.',
+          attendees: ['S', 'M'],
+          attendeeNames: ['Sofia', 'Morten'],
+          isOrg: true,
+          canBuddy: true
+        }
+      ],
+      schedule: [],
+      pastEvents: [
+        {
+          id: 'kari-past-1',
+          title: 'Community Garden Cleanup',
+          when: 'Completed · Last Sunday 11:00',
+          location: 'Sofienberg Park',
+          attendees: [
+            { name: 'Jonas', avatar: 'J', liked: true },
+            { name: 'Sara', avatar: 'S', liked: true }
+          ]
+        }
+      ]
+    }
+  },
+  logs: [
+    { tag: 'AI CORE', tagClass: 'tag-ai', text: 'Nabo Daemon v3.0 initialized. Monitoring informal social intent.' },
+    { tag: 'INTENT PARSED', tagClass: 'tag-match', text: 'Ingested note from Jonas: "Grab coffee sometime with Mia" (Confidence: 0.94)' },
+    { tag: 'AUTONOMOUS OUTREACH', tagClass: 'tag-coord', text: 'Pinged Mia\'s agent. Proposing Thursday 17:30.' },
+    { tag: 'DOUBLE OPT-IN', tagClass: 'tag-coord', text: 'Mia\'s agent returned: OPT-IN [Thu 17:30, Tim Wendelboe].' },
+    { tag: 'SOCIAL SHIELD', tagClass: 'tag-shield', text: 'Rejection Shield Active: Jonas can decline with 100% private anonymity.' }
+  ]
 };
 
-let currentPersona = 'jonas';
-let activeProposals = [...personas.jonas.proposals];
-let confirmedSchedule = [];
-let currentIndex = 0;
+// State management
+let state = loadState();
 
-const stackEl = document.getElementById('stack');
-const consoleStreamEl = document.getElementById('consoleStream');
-const scheduleListEl = document.getElementById('scheduleList');
-const toastEl = document.getElementById('toast');
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultState));
+  } catch (e) {
+    return JSON.parse(JSON.stringify(defaultState));
+  }
+}
 
-// Telemetry initial logs
-const initialLogs = [
-  { tag: 'AI CORE', tagClass: 'tag-ai', text: 'Nabo Agent Daemon initialized. Monitoring informal intent triggers.' },
-  { tag: 'INTENT', tagClass: 'tag-match', text: 'Ingested note from Jonas: "Grab coffee sometime with Mia" (Confidence: 0.94)' },
-  { tag: 'OUTREACH', tagClass: 'tag-coord', text: 'Autonomous ping dispatched to Mia\'s Nabo Agent. Proposing Thursday 17:30.' },
-  { tag: 'CONFIRM', tagClass: 'tag-coord', text: 'Mia\'s agent returned: OPT-IN [Thu 17:30, Tim Wendelboe].' },
-  { tag: 'SHIELD', tagClass: 'tag-shield', text: 'Social Shield Active: Jonas can decline with zero disclosure to Mia.' },
-  { tag: 'ORG DEMAND', tagClass: 'tag-match', text: 'Sofienberg Music School requested 4 piano movers. Querying local proximity pool.' }
-];
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error('Failed to save to localStorage', e);
+  }
+}
 
-function logAgent(tag, tagClass, text, isSpecial = false) {
+function resetToDefaults() {
+  if (confirm("Reset Nabo to the clean demo scenario?")) {
+    state = JSON.parse(JSON.stringify(defaultState));
+    saveState();
+    logTelemetry('SYSTEM RESET', 'tag-ai', 'State reset to default demo scenario.');
+    initUI();
+    showToast("Demo scenario reset.");
+  }
+}
+
+// Telemetry Logger
+function logTelemetry(tag, tagClass, text, isSpecial = false) {
   const d = new Date();
   const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
-  
+  const logItem = { time, tag, tagClass, text, isSpecial };
+  state.logs.push(logItem);
+  saveState();
+
+  const streamEl = document.getElementById('consoleStream');
   const entry = document.createElement('div');
   entry.className = `log-entry ${isSpecial ? 'active' : ''}`;
   entry.innerHTML = `<span class="log-time">${time}</span><span class="log-tag ${tagClass}">${tag}</span><span>${text}</span>`;
-  consoleStreamEl.appendChild(entry);
-  consoleStreamEl.scrollTop = consoleStreamEl.scrollHeight;
+  streamEl.appendChild(entry);
+  streamEl.scrollTop = streamEl.scrollHeight;
 }
 
 function renderConsole() {
-  consoleStreamEl.innerHTML = '';
-  initialLogs.forEach(l => logAgent(l.tag, l.tagClass, l.text));
+  const streamEl = document.getElementById('consoleStream');
+  streamEl.innerHTML = '';
+  state.logs.forEach(l => {
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${l.isSpecial ? 'active' : ''}`;
+    entry.innerHTML = `<span class="log-time">${l.time || '10:45'}</span><span class="log-tag ${l.tagClass}">${l.tag}</span><span>${l.text}</span>`;
+    streamEl.appendChild(entry);
+  });
+  streamEl.scrollTop = streamEl.scrollHeight;
+
+  document.getElementById('statInitiations').textContent = state.stats.initiations;
+  document.getElementById('statDeclines').textContent = state.stats.declines;
+  document.getElementById('statConfirmed').textContent = state.stats.confirmed;
 }
 
-function renderCards() {
-  stackEl.innerHTML = '';
-  const remaining = activeProposals.length - currentIndex;
-  document.getElementById('propCountBadge').textContent = `(${remaining})`;
+// UI Initialization
+function initUI() {
+  const p = state.personas[state.currentPersona];
+  document.getElementById('btnJonas').classList.toggle('active', state.currentPersona === 'jonas');
+  document.getElementById('btnKari').classList.toggle('active', state.currentPersona === 'kari');
 
-  if (currentIndex >= activeProposals.length) {
-    stackEl.innerHTML = `
+  document.getElementById('headerGreeting').textContent = `Hey ${p.name}`;
+  document.getElementById('headerSub').textContent = p.sub;
+  document.getElementById('contextTitle').textContent = p.bio;
+  document.getElementById('contextSub').textContent = p.details;
+
+  renderCards();
+  renderSchedule();
+  renderPastEvents();
+  renderConsole();
+}
+
+function setPersona(personaKey) {
+  state.currentPersona = personaKey;
+  saveState();
+  logTelemetry('PERSONA SWITCH', 'tag-ai', `Context switched to ${state.personas[personaKey].name}.`, true);
+  initUI();
+}
+
+// Render Proposal Cards
+let cardIndex = 0;
+function renderCards() {
+  const stack = document.getElementById('stack');
+  stack.innerHTML = '';
+  const p = state.personas[state.currentPersona];
+  const proposals = p.proposals;
+
+  document.getElementById('badgeProposals').textContent = `(${proposals.length})`;
+
+  if (proposals.length === 0) {
+    stack.innerHTML = `
       <div class="done-state">
         <div class="done-icon">✨</div>
         <div class="done-title">All proposals handled!</div>
-        <div class="done-desc">Nabo has locked in your schedule. Your contacts will only know about the events you said YES to. Zero awkwardness.</div>
+        <div class="done-desc">Nabo has locked in your schedule. Your contacts will only know about the events you said YES to. Click "Add Intent" to test more.</div>
       </div>
     `;
     document.getElementById('actionBar').style.display = 'none';
@@ -1143,16 +1334,16 @@ function renderCards() {
 
   document.getElementById('actionBar').style.display = 'flex';
 
-  // Render top 2 cards for 3D stack effect
-  const cardIndices = [currentIndex + 1, currentIndex];
-  cardIndices.forEach(idx => {
-    if (idx >= activeProposals.length) return;
-    const p = activeProposals[idx];
-    const isTop = (idx === currentIndex);
+  // Render top 2
+  const visible = [1, 0];
+  visible.forEach(offset => {
+    if (offset >= proposals.length) return;
+    const item = proposals[offset];
+    const isTop = (offset === 0);
 
     const card = document.createElement('div');
     card.className = 'proposal-card';
-    card.id = `card-${p.id}`;
+    card.id = `card-${item.id}`;
     if (!isTop) {
       card.style.transform = 'scale(0.95) translateY(14px)';
       card.style.opacity = '0.6';
@@ -1160,38 +1351,40 @@ function renderCards() {
 
     card.innerHTML = `
       <div class="badge-row">
-        <span class="tag-pill ${p.tagClass}">${p.tag}</span>
-        <span class="safe-rejection-badge">🛡️ Private Decline</span>
+        <span class="tag-pill ${item.tagClass}">${item.tag}</span>
+        <span class="safe-shield">🛡️ Private Decline</span>
       </div>
-      <div class="proposal-title">${p.title}</div>
+      <div class="proposal-title">${item.title}</div>
       <div class="proposal-meta">
-        <span>🕒 ${p.when}</span>
+        <span>🕒 ${item.when}</span>
       </div>
       <div class="why-box">
         <div class="why-header"><span>💡</span> Why Nabo proposed this</div>
-        ${p.why}
+        ${item.why}
       </div>
       <div class="attendees-row">
         <div style="display:flex; align-items:center;">
           <div class="avatar-group">
-            ${p.attendees.map(a => `<div class="avatar">${a}</div>`).join('')}
+            ${item.attendees.map(a => `<div class="avatar">${a}</div>`).join('')}
           </div>
-          <div class="attendees-text">${p.attendeeNames.join(', ')}</div>
+          <div class="attendees-text">${item.attendeeNames.join(', ')}</div>
         </div>
-        ${p.canBuddy ? '<span style="font-size:11px; color:var(--accent); font-weight:700;">+ "Go as two" eligible</span>' : ''}
+        ${item.canBuddy ? '<span style="font-size:11px; color:var(--accent); font-weight:700;">+ "Go as two" eligible</span>' : ''}
       </div>
       <div class="stamp yes">I\'M IN!</div>
       <div class="stamp no">PASS</div>
     `;
 
-    stackEl.appendChild(card);
-    if (isTop) setupDrag(card);
+    stack.appendChild(card);
+    if (isTop) setupCardDrag(card);
   });
 }
 
-function handleDecision(accept, withBuddy = false) {
-  if (currentIndex >= activeProposals.length) return;
-  const current = activeProposals[currentIndex];
+function handleCardDecision(accept, withBuddy = false) {
+  const p = state.personas[state.currentPersona];
+  if (!p.proposals || p.proposals.length === 0) return;
+
+  const current = p.proposals[0];
   const cardEl = document.getElementById(`card-${current.id}`);
 
   if (cardEl) {
@@ -1199,63 +1392,54 @@ function handleDecision(accept, withBuddy = false) {
   }
 
   if (accept) {
-    confirmedSchedule.push({
+    p.schedule.unshift({
       ...current,
-      pairedBuddy: withBuddy ? 'Amina (Newcomer Buddy)' : null
+      id: 'sched-' + Date.now(),
+      pairedBuddy: withBuddy ? 'Amina (Newcomer Arrival Buddy)' : null,
+      confirmedAt: new Date().toISOString()
     });
-    updateScheduleUI();
-    showToast(`✓ Confirmed! Nabo notifies ${current.attendeeNames[0]}. Calendar updated.`);
-    logAgent('CONFIRMED', 'tag-coord', `Jonas accepted "${current.title}". Mutual handshake complete. Adding to calendar.`);
+    state.stats.confirmed++;
+    saveState();
+
+    showToast(`✓ Confirmed! Nabo notifies ${current.attendeeNames[0]}. Calendar ready.`);
+    logTelemetry('CONFIRMED', 'tag-coord', `${p.name} accepted "${current.title}". Calendar handshake locked.`, true);
     if (withBuddy) {
-      logAgent('BUDDY PAIRED', 'tag-shield', `Jonas requested "Go as two". Paired with Amina to reduce arrival anxiety.`);
+      logTelemetry('BUDDY PAIRED', 'tag-shield', `Arrival Buddy paired (Amina) to eliminate newcomer intimidation.`);
     }
   } else {
+    state.stats.declines++;
+    saveState();
     showToast(`🛡️ Declined privately. ${current.attendeeNames[0]} will never know.`);
-    logAgent('DISCREET REJECT', 'tag-shield', `Jonas declined "${current.title}". Suppression rule applied. Zero notification sent.`);
+    logTelemetry('SHIELDED DECLINE', 'tag-shield', `${p.name} passed on "${current.title}". Suppression active. Zero notification emitted.`);
   }
 
-  currentIndex++;
-  setTimeout(renderCards, 320);
+  // Remove the handled card
+  p.proposals.shift();
+  saveState();
+
+  setTimeout(() => {
+    renderCards();
+    renderSchedule();
+    renderConsole();
+  }, 320);
 }
 
-function handleBuddyPrompt() {
-  if (currentIndex >= activeProposals.length) return;
-  const current = activeProposals[currentIndex];
+function handleBuddyAction() {
+  const p = state.personas[state.currentPersona];
+  if (p.proposals.length === 0) return;
+  const current = p.proposals[0];
   if (!current.canBuddy) {
-    showToast("This is a 1-on-1 meetup. For group events, you can pair up!");
+    showToast("This is a 1-on-1 hangout. For group & community activities, you can pair up!");
     return;
   }
-  handleDecision(true, true);
+  handleCardDecision(true, true);
 }
 
-function updateScheduleUI() {
-  document.getElementById('scheduleCountBadge').textContent = `(${confirmedSchedule.length})`;
-  if (confirmedSchedule.length === 0) {
-    scheduleListEl.innerHTML = `
-      <div class="done-state">
-        <div class="done-icon">📅</div>
-        <div class="done-title">No confirmed hangouts yet</div>
-        <div class="done-desc">Say "Yes" to proposals or pair up on a community activity to build your week without awkward texting.</div>
-      </div>
-    `;
-    return;
-  }
-
-  scheduleListEl.innerHTML = confirmedSchedule.map(item => `
-    <div class="schedule-card">
-      <span class="schedule-tag">Confirmed by Nabo</span>
-      <div class="schedule-time">${item.when.split(' · ')[0]}</div>
-      <div class="schedule-title">${item.title}</div>
-      <div class="schedule-loc">📍 ${item.when.split(' · ')[1] || 'Oslo'} · With ${item.attendeeNames.join(', ')}</div>
-      ${item.pairedBuddy ? `<div style="margin-top:8px; font-size:12px; color:var(--success); font-weight:600;">👥 Paired with buddy: ${item.pairedBuddy}</div>` : ''}
-    </div>
-  `).join('');
-}
-
-function setupDrag(card) {
+// Drag & Swipe Interaction
+function setupCardDrag(card) {
   let startX = null, currentX = 0;
-  const yesStamp = card.querySelector('.stamp.yes');
-  const noStamp = card.querySelector('.stamp.no');
+  const stampYes = card.querySelector('.stamp.yes');
+  const stampNo = card.querySelector('.stamp.no');
 
   const onPointerDown = e => {
     startX = e.clientX;
@@ -1268,11 +1452,11 @@ function setupDrag(card) {
     currentX = e.clientX - startX;
     card.style.transform = `translateX(${currentX}px) rotate(${currentX / 22}deg)`;
     if (currentX > 0) {
-      yesStamp.style.opacity = Math.min(1, currentX / 90);
-      noStamp.style.opacity = 0;
+      stampYes.style.opacity = Math.min(1, currentX / 90);
+      stampNo.style.opacity = 0;
     } else {
-      noStamp.style.opacity = Math.min(1, -currentX / 90);
-      yesStamp.style.opacity = 0;
+      stampNo.style.opacity = Math.min(1, -currentX / 90);
+      stampYes.style.opacity = 0;
     }
   };
 
@@ -1280,13 +1464,13 @@ function setupDrag(card) {
     if (startX === null) return;
     card.style.transition = 'transform 0.35s ease, opacity 0.3s ease';
     if (currentX > 100) {
-      handleDecision(true);
+      handleCardDecision(true);
     } else if (currentX < -100) {
-      handleDecision(false);
+      handleCardDecision(false);
     } else {
       card.style.transform = '';
-      yesStamp.style.opacity = 0;
-      noStamp.style.opacity = 0;
+      stampYes.style.opacity = 0;
+      stampNo.style.opacity = 0;
     }
     startX = null;
     currentX = 0;
@@ -1298,14 +1482,212 @@ function setupDrag(card) {
   card.addEventListener('pointercancel', onPointerUp);
 }
 
-let toastTimeout;
-function showToast(msg) {
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => toastEl.classList.remove('show'), 2400);
+// Confirmed Schedule Rendering & iCal Generation
+function renderSchedule() {
+  const p = state.personas[state.currentPersona];
+  const listEl = document.getElementById('scheduleList');
+  document.getElementById('badgeSchedule').textContent = `(${p.schedule.length})`;
+
+  if (p.schedule.length === 0) {
+    listEl.innerHTML = `
+      <div class="done-state">
+        <div class="done-icon">📅</div>
+        <div class="done-title">No confirmed hangouts yet</div>
+        <div class="done-desc">Swipe right or tap ✓ on proposals to populate your week without awkward back-and-forth texting.</div>
+      </div>
+    `;
+    return;
+  }
+
+  listEl.innerHTML = p.schedule.map(item => {
+    const title = item.title;
+    const whenParts = item.when.split(' · ');
+    const timeStr = whenParts[0] || 'Upcoming';
+    const locStr = whenParts[1] || 'Oslo';
+
+    // Google Calendar deep link
+    const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent('Coordinated seamlessly by Nabo Agent: ' + item.why)}&location=${encodeURIComponent(locStr)}`;
+
+    return `
+      <div class="schedule-card">
+        <span style="position:absolute; top:12px; right:12px; font-size:11px; font-weight:700; color:var(--success); background:var(--success-soft); padding:3px 8px; border-radius:6px;">✓ Double Opt-In</span>
+        <div class="schedule-time">${timeStr}</div>
+        <div class="schedule-title">${title}</div>
+        <div class="schedule-loc">📍 ${locStr} · With ${item.attendeeNames.join(', ')}</div>
+        ${item.pairedBuddy ? `<div style="margin-top:6px; font-size:12px; color:var(--success); font-weight:700;">👥 Arrival Buddy: ${item.pairedBuddy}</div>` : ''}
+        
+        <div class="schedule-actions">
+          <button class="cal-btn" onclick="downloadICal('${item.id}')">
+            <span>📥</span> Download .ics
+          </button>
+          <a class="cal-btn" href="${gCalUrl}" target="_blank">
+            <span>📅</span> Add to Google Cal
+          </a>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
+// Download real .ics iCalendar file
+function downloadICal(eventId) {
+  const p = state.personas[state.currentPersona];
+  const item = p.schedule.find(s => s.id === eventId);
+  if (!item) return;
+
+  const now = new Date();
+  const dtStamp = now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const icsData = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Nabo Social Agent//Claude Impact Lab Oslo//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:nabo-${item.id}@claude-impact-lab.oslo`,
+    `DTSTAMP:${dtStamp}`,
+    `SUMMARY:${item.title}`,
+    `DESCRIPTION:${item.why.replace(/\n/g, ' ')}`,
+    `LOCATION:${item.when.split(' · ')[1] || 'Oslo, Norway'}`,
+    'STATUS:CONFIRMED',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${item.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast(`📥 .ics calendar invite downloaded!`);
+  logTelemetry('CALENDAR EXPORT', 'tag-cal', `Generated and downloaded RFC-5545 .ics invite for "${item.title}".`);
+}
+
+// Recurrence Loop
+function renderPastEvents() {
+  const p = state.personas[state.currentPersona];
+  const container = document.getElementById('pastEventsList');
+  if (!p.pastEvents || p.pastEvents.length === 0) {
+    container.innerHTML = `<div class="done-desc" style="margin-top:20px;">No completed hangouts recorded yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = p.pastEvents.map(evt => `
+    <div class="past-card">
+      <div style="font-size:12px; font-weight:700; color:var(--ink-light);">${evt.when}</div>
+      <div style="font-size:16px; font-weight:800; margin:3px 0;">${evt.title}</div>
+      <div style="font-size:13px; color:var(--ink-light);">📍 ${evt.location}</div>
+
+      <div class="past-attendees-grid">
+        ${evt.attendees.map((att, idx) => `
+          <div class="person-rating">
+            <div class="person-info">
+              <div class="person-avatar">${att.avatar}</div>
+              <span>${att.name}</span>
+            </div>
+            <button class="like-btn ${att.liked ? 'liked' : ''}" onclick="toggleAffinity('${evt.id}', ${idx})">
+              ${att.liked ? '❤️ Matched' : '👍 See again'}
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAffinity(eventId, attendeeIdx) {
+  const p = state.personas[state.currentPersona];
+  const evt = p.pastEvents.find(e => e.id === eventId);
+  if (!evt) return;
+  const att = evt.attendees[attendeeIdx];
+  att.liked = !att.liked;
+  saveState();
+
+  if (att.liked) {
+    showToast(`Saved! Nabo will prioritize informal hangouts with ${att.name}.`);
+    logTelemetry('MUTUAL AFFINITY', 'tag-coord', `Mutual thumbs-up logged for ${att.name}. Algorithm schedules follow-up recommendation.`);
+  } else {
+    logTelemetry('AFFINITY REMOVED', 'tag-match', `Recurrence priority cleared for ${att.name}.`);
+  }
+  renderPastEvents();
+}
+
+// Intake Modal
+function openIntakeModal() {
+  document.getElementById('intakeModal').classList.add('open');
+  toggleIntakeFields();
+}
+function closeIntakeModal() {
+  document.getElementById('intakeModal').classList.remove('open');
+}
+
+function toggleIntakeFields() {
+  const type = document.getElementById('intakeType').value;
+  const lblTitle = document.getElementById('lblTitle');
+  const lblPartner = document.getElementById('lblPartner');
+
+  if (type === 'intent') {
+    lblTitle.textContent = "What's the casual activity?";
+    lblPartner.textContent = "Who did you talk about it with?";
+  } else if (type === 'volunteer') {
+    lblTitle.textContent = "Community or Volunteer Need";
+    lblPartner.textContent = "Organization or Host";
+  } else {
+    lblTitle.textContent = "Context / Where you met";
+    lblPartner.textContent = "Contact Name";
+  }
+}
+
+function submitIntake() {
+  const type = document.getElementById('intakeType').value;
+  const title = document.getElementById('inpTitle').value.trim();
+  const partner = document.getElementById('inpPartner').value.trim();
+  const when = document.getElementById('inpWhen').value.trim() || 'This Friday · Oslo';
+  const why = document.getElementById('inpWhy').value.trim() || 'Nabo autonomously matched availability and initiated this proposal.';
+  const tags = document.getElementById('inpTags').value.trim() || 'social';
+
+  if (!title || !partner) {
+    alert("Please provide both an activity/title and partner/contact name.");
+    return;
+  }
+
+  const p = state.personas[state.currentPersona];
+  const newProp = {
+    id: 'custom-' + Date.now(),
+    tag: type === 'volunteer' ? 'Community Need' : 'Custom Match',
+    tagClass: type === 'volunteer' ? 'org' : 'custom',
+    title: type === 'contact' ? `Coffee with ${partner}` : title,
+    when: when,
+    why: why,
+    attendees: [partner.charAt(0).toUpperCase()],
+    attendeeNames: [partner],
+    isOrg: (type === 'volunteer'),
+    canBuddy: true
+  };
+
+  p.proposals.unshift(newProp);
+  state.stats.initiations++;
+  saveState();
+
+  closeIntakeModal();
+  showToast(`✓ Intake parsed! Nabo synthesized a new proposal.`);
+  logTelemetry('INTENT PARSED', 'tag-match', `Processed: "${title}" with ${partner}. Autonomous proposition synthesized.`);
+  
+  // Clear inputs
+  document.getElementById('inpTitle').value = '';
+  document.getElementById('inpPartner').value = '';
+  document.getElementById('inpWhy').value = '';
+
+  renderCards();
+  renderConsole();
+}
+
+// Navigation Tabs
 function switchTab(tabId) {
   ['proposals', 'schedule', 'recurrence'].forEach(t => {
     document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.remove('active');
@@ -1324,50 +1706,27 @@ function switchTab(tabId) {
   }
 }
 
-function switchPersona(personaKey) {
-  currentPersona = personaKey;
-  const p = personas[personaKey];
-  document.getElementById('btnPersonaJonas').classList.toggle('active', personaKey === 'jonas');
-  document.getElementById('btnPersonaKari').classList.toggle('active', personaKey === 'kari');
-
-  document.getElementById('appHeaderTitle').textContent = `Hey ${p.name}`;
-  document.getElementById('appHeaderSub').textContent = p.sub;
-  document.getElementById('contextName').textContent = p.bio;
-  document.getElementById('contextDetails').textContent = p.details;
-
-  activeProposals = [...p.proposals];
-  currentIndex = 0;
-  renderCards();
-
-  logAgent('PERSONA SWITCH', 'tag-ai', `Switched to ${p.name} perspective (${p.role}). Loaded ${p.proposals.length} active agent tasks.`, true);
+// Floating Toast
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
 }
 
-function toggleAffinity(name, btn) {
-  if (btn.classList.contains('liked')) {
-    btn.classList.remove('liked');
-    btn.textContent = '👍 See again';
-    logAgent('FEEDBACK UPDATED', 'tag-match', `Removed recurrence priority for ${name}.`);
-  } else {
-    btn.classList.add('liked');
-    btn.textContent = '❤️ Saved (Mutual)';
-    showToast(`Saved! Nabo will prioritize informal hangouts with ${name}.`);
-    logAgent('RECURRENCE FLYWHEEL', 'tag-coord', `Mutual affinity registered for ${name}! Scheduling follow-up suggestion in 7 days.`);
-  }
-}
-
-// Button click listeners
-document.getElementById('btnYes').onclick = () => handleDecision(true);
-document.getElementById('btnNo').onclick = () => handleDecision(false);
+// Button click events
+document.getElementById('btnYes').onclick = () => handleCardDecision(true);
+document.getElementById('btnNo').onclick = () => handleCardDecision(false);
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight') handleDecision(true);
-  if (e.key === 'ArrowLeft') handleDecision(false);
+  if (e.key === 'ArrowRight') handleCardDecision(true);
+  if (e.key === 'ArrowLeft') handleCardDecision(false);
 });
 
-// Initial boot
-renderConsole();
-renderCards();
-updateScheduleUI();
+// Boot MVP
+initUI();
 </script>
 </body>
 </html>
