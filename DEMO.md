@@ -1,6 +1,6 @@
 # Nabo, five-minute demo script
 
-Open `index.html` in a browser, full screen, zoomed so all five phones fit. Press **Start over** before you begin. One person drives, one person talks.
+Open `index.html` in a browser, full screen, so all four phones sit on one row. Press **Start over** before you begin. One person drives, one person talks.
 
 ## 1. The problem (45 seconds)
 
@@ -18,7 +18,7 @@ Say it in your own words. Roughly:
 
 Point at the left phone.
 
-> This is Jonas. Made up. Moved here in February, into jazz and cycling, knows a few people, has stopped asking. The other phones are Sara, Erik and Amina, already on Nabo. The audience sees all five screens. Each person only sees their own.
+> This is Jonas. Made up. Moved here in February, into jazz and cycling, knows a few people, has stopped asking. The other phones are Sara, Erik and Amina, already on Nabo. The audience sees all four screens. Each person only sees their own.
 
 ## 3. Show it working (3 minutes)
 
@@ -42,9 +42,9 @@ Point at the left phone.
 
 > Erik said no. Nothing happened on anyone else's screen. That is the point. Three said yes, so it's on for three, at the same moment, and now they see who's coming with a face and a few lines each. Not a pit of strangers. Erik is simply not mentioned.
 
-**The paused phone.** Point at Tomas, right.
+**The rules.** Point at the note under the phones, don't read it all.
 
-> Tomas said yes last week and didn't go. He's paused until he attends one thing. Nobody else is told. A yes is a promise.
+> Two rules borrowed from Hinge. Say yes and don't show up, you're paused until you attend one thing. Keep saying no to people you picked yourself, you're quietly ranked down. Nobody is told. A yes is a promise.
 
 **The morning after.** Press **The morning after**. Tap **See again** on Sara, press **Done**.
 

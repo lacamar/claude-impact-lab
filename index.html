@@ -8,20 +8,20 @@
   :root { --bg:#f4f1ea; --card:#fff; --ink:#1c1b18; --muted:#6b675e; --yes:#2e8b57; --no:#c0392b; --accent:#d97706; --line:#e6e0d2; }
   * { box-sizing:border-box; }
   body { margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--ink); }
-  .top { max-width:1180px; margin:0 auto; padding:22px 20px 10px; display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; }
+  .top { max-width:1240px; margin:0 auto; padding:22px 20px 10px; display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; }
   .top h1 { margin:0; font-size:24px; }
   .top p { margin:4px 0 0; color:var(--muted); font-size:14px; max-width:620px; }
   .top .ctl { display:flex; gap:8px; }
   .top button { border:1px solid var(--line); background:#fff; padding:9px 14px; border-radius:999px; font-size:14px; cursor:pointer; }
   .top button.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .top button:disabled { opacity:.35; cursor:default; }
 
-  .agent { max-width:1180px; margin:10px auto 0; padding:0 20px; }
+  .agent { max-width:1240px; margin:10px auto 0; padding:0 20px; }
   .agent .bar { background:#fff7e6; border-left:4px solid var(--accent); border-radius:8px; padding:10px 14px; font-size:14px; line-height:1.4; min-height:42px; }
   .agent .bar b { color:var(--accent); text-transform:uppercase; letter-spacing:.06em; font-size:11px; display:block; margin-bottom:2px; }
 
-  .phones { max-width:1180px; margin:16px auto 30px; padding:0 20px; display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:14px; }
-  @media (max-width:1100px) { .phones { grid-template-columns:repeat(3, minmax(0,1fr)); } }
-  @media (max-width:800px) { .phones { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  .phones { max-width:1240px; margin:16px auto 30px; padding:0 20px; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px; }
+  @media (max-width:900px) { .phones { grid-template-columns:repeat(2, minmax(0,1fr)); } }
   @media (max-width:480px) { .phones { grid-template-columns:1fr; } }
 
   .phone { background:#1c1b18; border-radius:28px; padding:10px; box-shadow:0 14px 34px rgba(0,0,0,.18); }
@@ -102,7 +102,7 @@
   .wk li { font-size:13px; display:flex; justify-content:space-between; gap:8px; border-left:3px solid var(--yes); padding-left:8px; }
   .wk li span { color:var(--muted); white-space:nowrap; }
   .wk .fine { margin-top:6px; }
-  .scan { max-width:1180px; margin:12px auto 0; padding:0 20px; display:none; }
+  .scan { max-width:1240px; margin:12px auto 0; padding:0 20px; display:none; }
   .scan.show { display:block; }
   .scan .box { background:#1c1b18; color:#f4f1ea; border-radius:14px; padding:14px 16px; display:grid; grid-template-columns:1fr 1.6fr 1fr; gap:14px; }
   @media (max-width:800px) { .scan .box { grid-template-columns:1fr; } }
@@ -121,7 +121,8 @@
   .scan .count small { display:block; font-size:11px; color:#cfc8b8; font-weight:400; margin-top:4px; }
   .scan .why { margin-top:8px; font-size:12.5px; color:#cfc8b8; line-height:1.45; }
   .scan .why b { color:#fff; }
-  .ledger { max-width:1180px; margin:0 auto 40px; padding:0 20px; }
+  .note { max-width:1240px; margin:0 auto 24px; padding:0 20px; font-size:13px; color:var(--muted); line-height:1.45; }
+  .ledger { max-width:1240px; margin:0 auto 40px; padding:0 20px; }
   .ledger h3 { margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
   .ledger ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
   .ledger li { background:#fff; border-radius:8px; padding:8px 12px; font-size:13px; display:flex; gap:12px; }
@@ -154,6 +155,8 @@
 
 <div class="phones" id="phones"></div>
 
+<div class="note">Not shown here, but in the rules: say yes and don't show up, and Nabo pauses you until you attend one thing. Keep saying no to people you picked yourself, and you are quietly ranked down. Nobody else is told either. A yes is a promise to the others.</div>
+
 <div class="ledger">
   <h3>What Nabo told whom</h3>
   <ul id="ledger"></ul>
@@ -177,7 +180,6 @@ const PEOPLE = [
     why:'This gig is on anyway. Three people who match your interests are being asked too. You said Fridays are your best night.' },
   { id:'amina', name:'Amina', color:'#b83280', bits:['Two years in Oslo','Jazz and photography','Says yes to walks'],
     why:'This gig is on anyway. Three people who match your interests are being asked too, one of them also into photography.' },
-  { id:'tomas', name:'Tomas', paused:true, color:'#7a7a7a', bits:['Said yes to a climb last Thursday','Did not go, did not cancel'], why:'' },
 ];
 const ACTIVE = PEOPLE.filter(p => !p.paused);
 
@@ -288,7 +290,7 @@ function render() {
   phones.querySelectorAll('button[data-pair]').forEach(b => b.onclick = () => decidePair(b.dataset.pair, b.dataset.who, b.dataset.ok === '1'));
 
   btnSkip.disabled = phase !== 'onboard';
-  btnAuto.disabled = phase === 'onboard' || phase === 'scan';
+  btnAuto.disabled = phase === 'onboard' || phase === 'scan' || (phase === 'after' && allPicked() && mutualPairs().length > 0 && !pairScanDone);
 
   btnAfter.disabled = !(isOn && phase === 'ask');
   btnAuto.textContent = phase === 'after' && !allPicked() ? 'Let the others pick' : 'Let the others answer';
@@ -485,6 +487,7 @@ const PAIR_FEED = [
 ];
 
 let pairScanDone = false;
+let autoQueued = false;
 function startPairScan() {
   if (pairScanDone) return;
   runScan({
@@ -493,7 +496,7 @@ function startPairScan() {
     feedH: 'Looking for a place and a time', feed: PAIR_FEED, total: 14, countH: 'places near both, open at a time both are free',
     msg: 'Two mutual picks. For each pair Nabo looks for a specific place and time that fits both, then proposes it to both at once.',
     why: '<b>Picked.</b> 9 minutes from both offices, quiet, open Tuesday evening, both free at 17:30. Same done for Sara and Amina.',
-  }, () => { pairScanDone = true; log('Looked at 14 places near both Jonas and Sara. Picked Kafé Nordlys, Tue 17:30: close to both, quiet, open, both free.'); render(); });
+  }, () => { pairScanDone = true; log('Looked at 14 places near both Jonas and Sara. Picked Kafé Nordlys, Tue 17:30: close to both, quiet, open, both free.'); render(); if (autoQueued) { autoQueued = false; auto(); } });
 }
 
 function startAsk() {
@@ -643,7 +646,7 @@ function morningAfter() {
 
 function auto() {
   timers.forEach(clearTimeout); timers = [];
-  if (phase === 'after' && allPicked() && !pairScanDone) { return; }
+  if (phase === 'after' && allPicked() && mutualPairs().length && !pairScanDone) { autoQueued = true; return; }
   if (phase === 'after' && allPicked()) {
     PAIR_SCRIPT.forEach(s => timers.push(setTimeout(() => {
       went().filter(q => q.id !== s.id && mutual(s.id, q.id)).forEach(q => { const k = pairKey(s.id, q.id); if (pairAns(k, s.id) === undefined) decidePair(k, s.id, true); });
@@ -657,7 +660,7 @@ function auto() {
 
 function reset() {
   timers.forEach(clearTimeout); timers = [];
-  answers = {}; isOn = false; isDropped = false; phase = 'onboard'; picks = {}; pairAnswers = {}; pairScanDone = false; ledger.innerHTML = '';
+  answers = {}; isOn = false; isDropped = false; phase = 'onboard'; picks = {}; pairAnswers = {}; pairScanDone = false; autoQueued = false; ledger.innerHTML = '';
   ob = { step:0, interests:[], evenings:[], photo:false, cal:false };
   document.getElementById('scan').classList.remove('show');
   log('Jonas signed up. Four questions before anything is proposed.');
