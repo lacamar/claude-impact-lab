@@ -20,7 +20,7 @@
   .agent .bar { background:#fff7e6; border-left:4px solid var(--accent); border-radius:8px; padding:10px 14px; font-size:14px; line-height:1.4; min-height:42px; }
   .agent .bar b { color:var(--accent); text-transform:uppercase; letter-spacing:.06em; font-size:11px; display:block; margin-bottom:2px; }
 
-  .phones { max-width:1240px; margin:16px auto 30px; padding:0 20px; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px; }
+  .phones { max-width:1240px; margin:16px auto 20px; padding:0 20px; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:18px; }
   @media (max-width:900px) { .phones { grid-template-columns:repeat(2, minmax(0,1fr)); } }
   @media (max-width:480px) { .phones { grid-template-columns:1fr; } }
 
@@ -28,7 +28,7 @@
   .phone.paused { opacity:.8; }
   .state .dot.off { background:var(--no); }
   .phone.you { outline:3px solid var(--accent); outline-offset:3px; }
-  .screen { background:var(--bg); border-radius:20px; min-height:560px; display:flex; flex-direction:column; overflow:hidden; }
+  .screen { background:var(--bg); border-radius:20px; min-height:560px; max-height:680px; display:flex; flex-direction:column; overflow:hidden auto; }
   .sh { padding:12px 14px 8px; display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--muted); border-bottom:1px solid var(--line); }
   .sh b { color:var(--ink); font-size:15px; }
   .sh .priv { font-size:11px; background:#e8e2d4; padding:3px 8px; border-radius:999px; }
@@ -121,13 +121,14 @@
   .scan .count small { display:block; font-size:11px; color:#cfc8b8; font-weight:400; margin-top:4px; }
   .scan .why { margin-top:8px; font-size:12.5px; color:#cfc8b8; line-height:1.45; }
   .scan .why b { color:#fff; }
-  .note { max-width:1240px; margin:0 auto 24px; padding:0 20px; font-size:13px; color:var(--muted); line-height:1.45; }
-  .ledger { max-width:1240px; margin:0 auto 40px; padding:0 20px; }
+  .note { max-width:1240px; margin:0 auto; padding:0 20px; font-size:13px; color:var(--muted); line-height:1.45; }
+  .ledger { max-width:1240px; margin:24px auto 40px; padding:0 20px; }
   .ledger h3 { margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
   .ledger ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
   .ledger li { background:#fff; border-radius:8px; padding:8px 12px; font-size:13px; display:flex; gap:12px; }
   .ledger li span { color:var(--muted); min-width:44px; font-variant-numeric:tabular-nums; }
   .ledger li.hid { color:var(--muted); font-style:italic; }
+  @media (min-width:1900px) { .ledger { position:fixed; top:22px; right:24px; width:300px; margin:0; padding:0; max-height:calc(100vh - 44px); overflow:auto; } }
 </style>
 </head>
 <body>
@@ -233,6 +234,7 @@ function log(text, hidden=false) {
   li.innerHTML = `<span>${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}</span>${text}`;
   if (hidden) li.className = 'hid';
   ledger.appendChild(li);
+  li.scrollIntoView({ block: 'nearest' });
 }
 
 function yesCount() { return Object.values(answers).filter(v => v === true).length; }
