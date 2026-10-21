@@ -3,152 +3,253 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nabo — activities that ask you</title>
+<title>Nabo — nobody has to ask</title>
 <style>
-  :root { --bg:#f4f1ea; --card:#fff; --ink:#1c1b18; --muted:#6b675e; --yes:#2e8b57; --no:#c0392b; --accent:#d97706; }
+  :root { --bg:#f4f1ea; --card:#fff; --ink:#1c1b18; --muted:#6b675e; --yes:#2e8b57; --no:#c0392b; --accent:#d97706; --line:#e6e0d2; }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; display:flex; flex-direction:column; align-items:center; }
-  header { width:100%; max-width:420px; padding:20px 20px 0; }
-  header h1 { margin:0; font-size:22px; }
-  header p { margin:4px 0 0; color:var(--muted); font-size:14px; }
-  .who { display:flex; gap:8px; align-items:center; margin-top:12px; font-size:13px; color:var(--muted); }
-  .who b { color:var(--ink); }
-  .stack { position:relative; width:360px; height:470px; margin:20px 0 8px; }
-  .card { position:absolute; inset:0; background:var(--card); border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,.12); padding:22px; display:flex; flex-direction:column; transition:transform .35s ease, opacity .35s ease; user-select:none; touch-action:none; }
-  .card .tag { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); font-weight:600; }
-  .card h2 { margin:8px 0 4px; font-size:26px; line-height:1.15; }
-  .card .when { color:var(--muted); font-size:15px; }
-  .card .why { margin-top:auto; background:#fff7e6; border-left:4px solid var(--accent); padding:12px 14px; border-radius:8px; font-size:15px; line-height:1.4; }
-  .card .why small { display:block; color:var(--muted); margin-bottom:4px; font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
-  .card .people { display:flex; gap:6px; margin-top:14px; align-items:center; font-size:14px; color:var(--muted); }
-  .card .people span { width:30px; height:30px; border-radius:50%; background:#e8e2d4; display:grid; place-items:center; font-weight:600; color:var(--ink); font-size:13px; }
-  .card.out-right { transform:translateX(130%) rotate(12deg); opacity:0; }
-  .card.out-left { transform:translateX(-130%) rotate(-12deg); opacity:0; }
-  .stamp { position:absolute; top:24px; font-size:28px; font-weight:800; padding:4px 12px; border:4px solid; border-radius:8px; opacity:0; transform:rotate(-15deg); pointer-events:none; }
-  .stamp.yes { right:24px; color:var(--yes); border-color:var(--yes); }
-  .stamp.no { left:24px; color:var(--no); border-color:var(--no); transform:rotate(15deg); }
-  .actions { display:flex; gap:20px; margin:8px 0 16px; }
-  .actions button { width:64px; height:64px; border-radius:50%; border:0; font-size:28px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.12); background:#fff; }
-  .actions .no { color:var(--no); } .actions .yes { color:var(--yes); }
-  .hint { color:var(--muted); font-size:13px; margin-bottom:18px; }
-  .week { width:100%; max-width:420px; padding:0 20px 30px; }
-  .week h3 { margin:0 0 8px; font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
-  .week ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
-  .week li { background:#fff; border-radius:10px; padding:10px 12px; font-size:14px; display:flex; justify-content:space-between; border-left:4px solid var(--yes); }
-  .week li span { color:var(--muted); }
-  .week .empty { color:var(--muted); font-size:14px; }
-  .toast { position:fixed; left:50%; bottom:28px; transform:translate(-50%, 20px); background:var(--ink); color:#fff; padding:10px 16px; border-radius:999px; font-size:14px; opacity:0; transition:all .25s; pointer-events:none; }
-  .toast.show { opacity:1; transform:translate(-50%, 0); }
-  .done { text-align:center; padding:40px 24px; }
-  .done h2 { margin:0 0 8px; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--ink); }
+  .top { max-width:1180px; margin:0 auto; padding:22px 20px 10px; display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; }
+  .top h1 { margin:0; font-size:24px; }
+  .top p { margin:4px 0 0; color:var(--muted); font-size:14px; max-width:620px; }
+  .top .ctl { display:flex; gap:8px; }
+  .top button { border:1px solid var(--line); background:#fff; padding:9px 14px; border-radius:999px; font-size:14px; cursor:pointer; }
+  .top button.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  .agent { max-width:1180px; margin:10px auto 0; padding:0 20px; }
+  .agent .bar { background:#fff7e6; border-left:4px solid var(--accent); border-radius:8px; padding:10px 14px; font-size:14px; line-height:1.4; min-height:42px; }
+  .agent .bar b { color:var(--accent); text-transform:uppercase; letter-spacing:.06em; font-size:11px; display:block; margin-bottom:2px; }
+
+  .phones { max-width:1180px; margin:16px auto 30px; padding:0 20px; display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:16px; }
+  @media (max-width:900px) { .phones { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width:480px) { .phones { grid-template-columns:1fr; } }
+
+  .phone { background:#1c1b18; border-radius:28px; padding:10px; box-shadow:0 14px 34px rgba(0,0,0,.18); }
+  .phone.you { outline:3px solid var(--accent); outline-offset:3px; }
+  .screen { background:var(--bg); border-radius:20px; min-height:560px; display:flex; flex-direction:column; overflow:hidden; }
+  .sh { padding:12px 14px 8px; display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--muted); border-bottom:1px solid var(--line); }
+  .sh b { color:var(--ink); font-size:15px; }
+  .sh .priv { font-size:11px; background:#e8e2d4; padding:3px 8px; border-radius:999px; }
+  .body { padding:12px; display:flex; flex-direction:column; flex:1; }
+
+  .card { background:var(--card); border-radius:16px; padding:16px; box-shadow:0 6px 18px rgba(0,0,0,.08); display:flex; flex-direction:column; gap:6px; flex:1; }
+  .card .tag { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); font-weight:700; }
+  .card h2 { margin:2px 0 0; font-size:21px; line-height:1.15; }
+  .card .when { color:var(--muted); font-size:14px; }
+  .card .why { margin-top:8px; background:#fff7e6; border-left:4px solid var(--accent); padding:10px 12px; border-radius:8px; font-size:13.5px; line-height:1.4; }
+  .card .why small { display:block; color:var(--muted); margin-bottom:3px; font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+  .card .count { margin-top:auto; font-size:13px; color:var(--muted); padding-top:10px; }
+  .card .fine { font-size:12px; color:var(--muted); line-height:1.35; border-top:1px solid var(--line); padding-top:8px; }
+
+  .actions { display:flex; gap:12px; margin-top:12px; }
+  .actions button { flex:1; height:50px; border-radius:14px; border:0; font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,.1); }
+  .actions .no { background:#fff; color:var(--no); } .actions .yes { background:var(--yes); color:#fff; }
+  .actions button:disabled { opacity:.35; cursor:default; box-shadow:none; }
+
+  .state { flex:1; display:flex; flex-direction:column; justify-content:center; text-align:center; padding:10px; gap:8px; }
+  .state h3 { margin:0; font-size:19px; }
+  .state p { margin:0; color:var(--muted); font-size:13.5px; line-height:1.45; }
+  .state .dot { width:14px; height:14px; border-radius:50%; margin:0 auto 6px; background:#e8e2d4; }
+  .state .dot.wait { animation:pulse 1.2s infinite; background:var(--accent); }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.4);opacity:1} }
+
+  .on { flex:1; display:flex; flex-direction:column; gap:8px; }
+  .on .head { background:var(--yes); color:#fff; border-radius:14px; padding:12px 14px; }
+  .on .head b { display:block; font-size:18px; }
+  .on .head span { font-size:13px; opacity:.9; }
+  .on h4 { margin:6px 0 0; font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  .who { background:#fff; border-radius:12px; padding:9px 10px; display:flex; gap:10px; align-items:flex-start; }
+  .who .av { width:38px; height:38px; border-radius:50%; display:grid; place-items:center; font-weight:700; color:#fff; font-size:15px; flex:none; }
+  .who b { font-size:14px; display:block; }
+  .who small { color:var(--muted); font-size:12px; line-height:1.35; display:block; }
+  .on .fine { font-size:12px; color:var(--muted); margin-top:auto; line-height:1.35; }
+
+  .ledger { max-width:1180px; margin:0 auto 40px; padding:0 20px; }
+  .ledger h3 { margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  .ledger ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+  .ledger li { background:#fff; border-radius:8px; padding:8px 12px; font-size:13px; display:flex; gap:12px; }
+  .ledger li span { color:var(--muted); min-width:44px; font-variant-numeric:tabular-nums; }
+  .ledger li.hid { color:var(--muted); font-style:italic; }
 </style>
 </head>
 <body>
-<header>
-  <h1>Nabo</h1>
-  <p>You said "sometime" to people. Nabo does the asking, finds the time, and only tells you when it's a yes on both sides.</p>
-  <div class="who">You: <b>Jonas</b> · "sometime" with Mia, Erik, Amina, the Sunday riders · free Thu eve, Sat afternoon</div>
-</header>
 
-<div class="stack" id="stack"></div>
-
-<div class="actions">
-  <button class="no" id="btnNo" aria-label="No">✕</button>
-  <button class="yes" id="btnYes" aria-label="Yes">✓</button>
+<div class="top">
+  <div>
+    <h1>Nabo</h1>
+    <p>Nobody has to ask. Nabo picks people who fit, proposes one thing to all of them the same way, and only says it's on when enough said yes. A no stays private.</p>
+  </div>
+  <div class="ctl">
+    <button id="btnAuto" class="primary">Let the others answer</button>
+    <button id="btnReset">Start over</button>
+  </div>
 </div>
-<div class="hint">Drag the card, press ← / →, or tap the buttons</div>
-<div class="toast" id="toast"></div>
 
-<section class="week">
-  <h3>Your week</h3>
-  <ul id="week"><li class="empty">Nothing yet. Say yes to something.</li></ul>
-</section>
+<div class="agent"><div class="bar"><b>Nabo</b><span id="agentMsg"></span></div></div>
+
+<div class="phones" id="phones"></div>
+
+<div class="ledger">
+  <h3>What Nabo told whom</h3>
+  <ul id="ledger"></ul>
+</div>
 
 <script>
-const me = { name:'Jonas', interests:['jazz','dogs','cycling'] };
+// Made-up people and a made-up event. Four phones; the left one is "you".
+const EVENT = {
+  tag: 'Friday · proposed to 4 people',
+  title: 'Live jazz, then a drink',
+  when: 'Fri 20:00 · a small jazz bar on Grünerløkka',
+  need: 3,
+};
 
-const proposals = [
-  { tag:'Mia said yes', title:'Coffee with Mia', when:'Thu 17:30 · Tim Wendelboe', why:'You both said "coffee sometime" three weeks ago. Nabo asked Mia first. She said yes to Thursday. You never had to.', people:['M'] },
-  { tag:'Erik said yes', title:'Jazz at Blå with Erik', when:'Thu 20:00 · after coffee, 12 min walk', why:'Erik mentioned Blå at the office party. He\'s in for Thursday. If you say no, he won\'t know you were asked.', people:['E'] },
-  { tag:'2 of 3 said yes', title:'Sunday ride to Maridalen', when:'Sun 10:00 · 35 km, easy pace', why:'Per and Lina from the bike shop said "join us sometime". Nabo picked the first Sunday all of you are free.', people:['P','L','N'] },
-  { tag:'Amina said yes', title:'Lunch with Amina', when:'Wed 12:00 · near both your offices', why:'You exchanged numbers at the meetup in August and never wrote. Nabo wrote for you. Lunch, not coffee, because Wednesday is her short day.', people:['A'] },
-  { tag:'Kari needs 4', title:'Move a piano, then waffles', when:'Sat 14:00 · Sofienberg music school', why:'Kari asked Nabo for four people instead of asking neighbours one by one. Three said yes. You\'re free Saturday afternoon.', people:['K','A','T'] },
-  { tag:'Nabo\'s idea', title:'Walk a shelter dog with Mia', when:'Sat 11:00 · Dyrebeskyttelsen Oslo', why:'You both like dogs and both said yes to Thursday. Nabo suggests a second one before you have to.', people:['M'] },
+const PEOPLE = [
+  { id:'jonas', name:'Jonas', you:true,  color:'#d97706', bits:['New in Oslo since February','Jazz, cycling, cooking','Free most evenings'],
+    why:'Three people who match your interests are going. Nobody organised this; Nabo proposed it to all four of you.' },
+  { id:'sara',  name:'Sara',  color:'#2e8b57', bits:['Moved here last year','Plays piano, likes small venues','Sunday climber'],
+    why:'Three people who like live music are going. You said you want to meet people outside work.' },
+  { id:'erik',  name:'Erik',  color:'#5b6abf', bits:['Grew up in Oslo','Record collector','Shift worker, erratic weeks'],
+    why:'Three people who match your interests are going. You said Fridays are your best night.' },
+  { id:'amina', name:'Amina', color:'#b83280', bits:['Two years in Oslo','Jazz and photography','Says yes to walks'],
+    why:'Three people who match your interests are going, one of them also into photography.' },
 ];
 
-const stack = document.getElementById('stack');
-const week = document.getElementById('week');
-const yes = [];
-let i = 0;
+// In auto mode the others answer one by one. Erik says no.
+const SCRIPT = [ {id:'sara', ok:true, t:900}, {id:'erik', ok:false, t:1900}, {id:'amina', ok:true, t:3000} ];
+
+let answers = {};
+let isOn = false;
+let isDropped = false;
+let timers = [];
+
+const phones = document.getElementById('phones');
+const ledger = document.getElementById('ledger');
+const agentMsg = document.getElementById('agentMsg');
+
+function log(text, hidden=false) {
+  const li = document.createElement('li');
+  const now = new Date();
+  li.innerHTML = `<span>${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}</span>${text}`;
+  if (hidden) li.className = 'hid';
+  ledger.appendChild(li);
+}
+
+function yesCount() { return Object.values(answers).filter(v => v === true).length; }
+function noCount() { return Object.values(answers).filter(v => v === false).length; }
 
 function render() {
-  stack.innerHTML = '';
-  if (i >= proposals.length) {
-    stack.innerHTML = `<div class="card done"><h2>That's all for this week</h2><p>You said yes to ${yes.length}. Nabo confirms with them and reminds you both the morning of. The ${proposals.length - yes.length} you passed on will never know they were asked. Nothing to write, nothing to chase.</p></div>`;
-    return;
-  }
-  [i + 1, i].forEach(k => {
-    const p = proposals[k]; if (!p) return;
+  phones.innerHTML = '';
+  PEOPLE.forEach(p => {
     const el = document.createElement('div');
-    el.className = 'card';
-    if (k === i + 1) el.style.transform = 'scale(.95) translateY(12px)';
-    el.innerHTML = `
-      <div class="tag">${p.tag}</div>
-      <h2>${p.title}</h2>
-      <div class="when">${p.when}</div>
-      <div class="why"><small>Why you</small>${p.why}</div>
-      <div class="people">${p.people.map(x => `<span>${x}</span>`).join('')} going</div>
-      <div class="stamp yes">YES</div><div class="stamp no">NOPE</div>`;
-    stack.appendChild(el);
-    if (k === i) drag(el);
+    el.className = 'phone' + (p.you ? ' you' : '');
+    const a = answers[p.id];
+    let body;
+    if (isOn && a === true) body = onScreen(p);
+    else if (a === true && isDropped) body = droppedScreen(p);
+    else if (a === true) body = waitScreen(p);
+    else if (a === false) body = noScreen(p);
+    else if (isOn) body = missedScreen(p);
+    else body = cardScreen(p);
+    el.innerHTML = `<div class="screen">
+      <div class="sh"><b>${p.name}${p.you ? ' (you)' : ''}</b><span class="priv">only ${p.name} sees this</span></div>
+      <div class="body">${body}</div></div>`;
+    phones.appendChild(el);
   });
+  phones.querySelectorAll('button[data-id]').forEach(b => b.onclick = () => decide(b.dataset.id, b.dataset.ok === '1'));
+  const y = yesCount(), n = noCount(), asked = PEOPLE.length - y - n;
+  if (isOn) agentMsg.textContent = `It's on. ${y} said yes, so Nabo told those ${y} it's happening and who's coming. ${n ? `${n} said no and ${n === 1 ? 'is' : 'are'} simply not mentioned.` : ''}`;
+  else if (asked === PEOPLE.length) agentMsg.textContent = `Asked all 4 the same way at the same time. Needs ${EVENT.need} yes to happen. Nobody is told what the others answered.`;
+  else agentMsg.textContent = `${y} yes, ${n} no, ${asked} not answered yet. Still needs ${Math.max(0, EVENT.need - y)} more yes. Nobody is told this but you, the audience.`;
 }
 
-function decide(ok) {
-  const top = stack.lastElementChild;
-  if (!top || i >= proposals.length) return;
-  top.classList.add(ok ? 'out-right' : 'out-left');
-  if (ok) {
-    yes.push(proposals[i]);
-    week.innerHTML = yes.map(p => `<li>${p.title}<span>${p.when.split(' · ')[0]}</span></li>`).join('');
-    toast(`Nabo tells ${proposals[i].people.length > 1 ? 'them' : proposals[i].title.split(' with ')[1] || 'them'} you're in. Reminder the morning of.`);
-  } else {
-    toast('No worries. They won\'t know you were asked.');
+function cardScreen(p) {
+  return `<div class="card">
+    <div class="tag">${EVENT.tag}</div>
+    <h2>${EVENT.title}</h2>
+    <div class="when">${EVENT.when}</div>
+    <div class="why"><small>Why you, ${p.name}</small>${p.why}</div>
+    <div class="count">About 4 people if it happens. You'll see who once it's on.</div>
+    <div class="fine">Yes or no, no maybe. If you say no, nobody will know you were asked.</div>
+  </div>
+  <div class="actions">
+    <button class="no" data-id="${p.id}" data-ok="0">No</button>
+    <button class="yes" data-id="${p.id}" data-ok="1">Yes</button>
+  </div>`;
+}
+
+function waitScreen(p) {
+  return `<div class="state"><div class="dot wait"></div>
+    <h3>You're in, if it happens</h3>
+    <p>Nabo is asking the others the same way it asked you. You'll hear when it's on, and who's coming.</p>
+    <p>Until then, nobody knows you said yes.</p></div>`;
+}
+
+function droppedScreen(p) {
+  return `<div class="state"><div class="dot"></div>
+    <h3>Not this Friday</h3>
+    <p>Not enough people could make it. You are not told who, and they are not told you said yes.</p>
+    <p>Nabo tries something else next week.</p></div>`;
+}
+
+function noScreen(p) {
+  return `<div class="state"><div class="dot"></div>
+    <h3>No worries</h3>
+    <p>Nobody will know you were asked. Nabo will try something else another week.</p></div>`;
+}
+
+function missedScreen(p) {
+  return `<div class="state"><div class="dot"></div>
+    <h3>Nothing new</h3>
+    <p>${p.name} never answered. Friday went ahead without them and they are not told.</p></div>`;
+}
+
+function onScreen(p) {
+  const going = PEOPLE.filter(q => answers[q.id] === true);
+  return `<div class="on">
+    <div class="head"><b>Friday is on 🎷</b><span>${EVENT.when} · ${going.length} of you</span></div>
+    <h4>Who's going</h4>
+    ${going.map(q => `<div class="who"><div class="av" style="background:${q.color}">${q.name[0]}</div><div><b>${q.name}${q.id === p.id ? ' (you)' : ''}</b><small>${q.bits.join(' · ')}</small></div></div>`).join('')}
+    <div class="fine">Nabo booked a table for ${going.length} and reminds everyone Friday afternoon. Nobody initiated this, so nobody is the host.</div>
+  </div>`;
+}
+
+function decide(id, ok) {
+  if (answers[id] !== undefined || isOn) return;
+  answers[id] = ok;
+  const p = PEOPLE.find(x => x.id === id);
+  log(`${p.name} said ${ok ? 'yes' : 'no'}. Nabo told nobody.`, true);
+  if (yesCount() >= EVENT.need && Object.keys(answers).length === PEOPLE.length) turnOn();
+  else if (yesCount() >= EVENT.need && noCount() + yesCount() === PEOPLE.length) turnOn();
+  render();
+  if (!isOn && Object.keys(answers).length === PEOPLE.length && yesCount() < EVENT.need) {
+    isDropped = true;
+    log(`To ${PEOPLE.filter(q => answers[q.id] === true).map(q => q.name).join(' and ')}: "Not this Friday, not enough could make it." Nobody is named.`);
+    render();
+    agentMsg.textContent = `Only ${yesCount()} said yes, needs ${EVENT.need}. Nabo drops it quietly. Nobody is told who said what, and nobody feels rejected.`;
   }
-  i++;
-  setTimeout(render, 300);
 }
 
-function drag(el) {
-  let x0 = null, dx = 0;
-  const y = el.querySelector('.stamp.yes'), n = el.querySelector('.stamp.no');
-  el.addEventListener('pointerdown', e => { x0 = e.clientX; el.style.transition = 'none'; el.setPointerCapture(e.pointerId); });
-  el.addEventListener('pointermove', e => {
-    if (x0 === null) return;
-    dx = e.clientX - x0;
-    el.style.transform = `translateX(${dx}px) rotate(${dx / 20}deg)`;
-    y.style.opacity = Math.max(0, dx / 100); n.style.opacity = Math.max(0, -dx / 100);
-  });
-  const up = () => {
-    if (x0 === null) return;
-    el.style.transition = '';
-    if (Math.abs(dx) > 110) decide(dx > 0); else { el.style.transform = ''; y.style.opacity = n.style.opacity = 0; }
-    x0 = null; dx = 0;
-  };
-  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+function turnOn() {
+  isOn = true;
+  const going = PEOPLE.filter(q => answers[q.id] === true).map(q => q.name);
+  log(`To ${going.join(', ')}: "Friday is on. Here's who's coming." Sent to all ${going.length} at once.`);
+  PEOPLE.filter(q => answers[q.id] === false).forEach(q => log(`To ${q.name}: nothing. They are not mentioned to the others.`, true));
 }
 
-let toastTimer;
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+function auto() {
+  timers.forEach(clearTimeout); timers = [];
+  SCRIPT.forEach(s => { if (answers[s.id] === undefined) timers.push(setTimeout(() => decide(s.id, s.ok), s.t)); });
 }
 
-document.getElementById('btnYes').onclick = () => decide(true);
-document.getElementById('btnNo').onclick = () => decide(false);
-document.addEventListener('keydown', e => { if (e.key === 'ArrowRight') decide(true); if (e.key === 'ArrowLeft') decide(false); });
-render();
+function reset() {
+  timers.forEach(clearTimeout); timers = [];
+  answers = {}; isOn = false; isDropped = false; ledger.innerHTML = '';
+  log('Proposed "Live jazz, then a drink, Fri 20:00" to Jonas, Sara, Erik and Amina. Same message to each, nobody named as the initiator.');
+  render();
+}
+
+document.getElementById('btnAuto').onclick = auto;
+document.getElementById('btnReset').onclick = reset;
+reset();
 </script>
 </body>
 </html>

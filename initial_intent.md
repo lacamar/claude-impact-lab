@@ -69,3 +69,73 @@ Move initiation away from the person and onto an agent.
 - Repo set up (this one). A draft single-page prototype exists in [`index.html`](index.html) ("Nabo": proposal cards with a why-you line and yes/no), built before the team asked to finish planning first. Treat it as a sketch, not a decision.
 - One team member is switching from Claude Code to Antigravity and wants to use the BMAD method to structure the work.
 - Next step the team named: formalise the problem, then narrow.
+
+## Decisions, 11:30 interview with Claude
+
+Answers from the team to five clarifying questions. Open decisions 1 to 4 above are now resolved as follows.
+
+### Problem statement (to confirm)
+
+**Someone who knows a few people in Oslo struggles to actually meet them, because every hangout depends on one person asking and coordinating, and after a few "can't that day" replies they stop asking and assume nobody wants to.**
+
+### The person
+
+A mix of the newcomer and the local who stopped asking: knows a few people here, has said "sometime" to them, and has given up initiating. Not the organiser, not strangers one-on-one.
+
+### What the agent does
+
+- Initiates instead of you. Proposals come from the agent, so declining is private and nobody is exposed.
+- Asks everyone as itself, collects yes or no from each side, and only surfaces a plan when all sides said yes.
+- Starts with small groups around an interest, where nobody is the initiator. One-to-one comes later, from who you clicked with.
+- After an event you say, anonymously, who you would like to see again. The agent uses that for the next proposal, as a pair or a group.
+
+### What the agent knows
+
+A short onboarding conversation: interests, age, gender, location, optional calendar access. After that it learns from what you accept and decline.
+
+### The demo, in order of build
+
+1. Onboarding, moved through fast.
+2. A group proposal with time and place, and the scheduling around it.
+3. The mechanism visible: both sides of the screen, each person answering privately, the plan appearing only when everyone said yes.
+4. The after-event step, "who would you like to see again", feeding the next proposal.
+
+Steps 2 and 3 are the core and come first. Step 4 can be a single static screen if time runs out.
+
+## Decisions, 11:45 after "play the person"
+
+Claude walked through the four steps as Jonas, someone who stopped asking. The team's answers:
+
+### What makes it not "Meetup with extra steps"
+
+- **Curation, not known faces.** A group proposal does not need one person you already know. The card says "this event is happening, and three people who match your interests are going." The agent's job is to make sure the people in a group fit each other, so the vibe is good and people come back. Meetup selects for people who create events; this selects for fit.
+- **Pitch it as a personalised matchmaker**, agent-initiated. "Agent" is the mechanism, not the sales line.
+- **First time with support, then alone.** A first experience can be with a close match or someone you know. Later events can be solo or all weak ties, which is how Creator Brunch Club events work.
+
+### The proposal is a decision, not a conversation
+
+- An event card: what, where, when, who is coming, roughly how many. **Yes or no only, no maybe.** Maybe means no.
+- No chatbot in the loop once onboarding is done.
+
+### Once the group is set
+
+- Everyone sees a **who's going** section: a profile card per person with picture, name and a few interest bullets. Takes away the "thrown in a pit with strangers" feeling.
+- A **profile picture is required** before attending. Part of the curation.
+
+### The plan survives declines
+
+- If one person says no, the plan goes ahead for the rest, with a lower threshold. An event with only one person is off. Rescheduling is a possible fallback.
+
+### Privacy of a no, confirmed
+
+- Each person is asked the same neutral way. Nobody is told "Jonas already said yes."
+- After the event, "who would you like to see again" is a silent mutual match. The screen says, in Hinge's style, that the other person will not see your answer unless they picked you too.
+
+### Onboarding effort is a feature
+
+- A somewhat taxing onboarding filters out low-effort people and flakers, who ruin the experience for the ones who try. Hinge over Tinder.
+
+### Parked for later, not today
+
+- Hinge-style nudges: decline too many proposals and you are paused; accept but never show up and you are asked to attend before getting more.
+- A "sometime" list of people you already know. Not needed for the group-first demo.
