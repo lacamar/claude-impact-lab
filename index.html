@@ -63,6 +63,19 @@
   .who small { color:var(--muted); font-size:12px; line-height:1.35; display:block; }
   .on .fine { font-size:12px; color:var(--muted); margin-top:auto; line-height:1.35; }
 
+  .pick { background:#fff; border-radius:12px; padding:9px 10px; display:flex; gap:10px; align-items:center; }
+  .pick .av { width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-weight:700; color:#fff; font-size:14px; flex:none; }
+  .pick .nm { flex:1; font-size:14px; font-weight:600; }
+  .pick .nm small { display:block; font-weight:400; color:var(--muted); font-size:11.5px; }
+  .pick button { border:1.5px solid var(--line); background:#fff; border-radius:999px; padding:6px 10px; font-size:12.5px; cursor:pointer; white-space:nowrap; }
+  .pick button.sel { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .send { margin-top:auto; height:46px; border-radius:14px; border:0; background:var(--ink); color:#fff; font-size:15px; font-weight:700; cursor:pointer; }
+  .send:disabled { opacity:.35; }
+  .next { background:#fff; border-radius:14px; padding:12px 14px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+  .next .tag { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--yes); font-weight:700; }
+  .next h2 { margin:3px 0 2px; font-size:18px; }
+  .next .when { color:var(--muted); font-size:13px; }
+  .next .why { margin-top:8px; background:#eef7f1; border-left:4px solid var(--yes); padding:8px 10px; border-radius:8px; font-size:12.5px; line-height:1.4; }
   .ledger { max-width:1180px; margin:0 auto 40px; padding:0 20px; }
   .ledger h3 { margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
   .ledger ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
@@ -80,6 +93,7 @@
   </div>
   <div class="ctl">
     <button id="btnAuto" class="primary">Let the others answer</button>
+    <button id="btnAfter" disabled>The morning after →</button>
     <button id="btnReset">Start over</button>
   </div>
 </div>
@@ -119,11 +133,25 @@ const SCRIPT = [ {id:'sara', ok:true, t:900}, {id:'erik', ok:false, t:1900}, {id
 let answers = {};
 let isOn = false;
 let isDropped = false;
+let phase = 'ask';          // 'ask' | 'after'
+let picks = {};             // id -> array of ids they'd like to see again
 let timers = [];
+
+// The morning after, in auto mode. Sara picks Jonas and Amina; Amina picks only Sara.
+const AFTER_SCRIPT = [ {id:'sara', ids:['jonas','amina'], t:900}, {id:'amina', ids:['sara'], t:2100} ];
+
+// What Nabo proposes to a mutual pair. Keyed by sorted pair.
+const PAIR_PLANS = {
+  'jonas|sara':  { what:'Coffee',     when:'Tue 17:30 · near both your offices' },
+  'amina|sara':  { what:'Walk',       when:'Sun 11:00 · Ekebergparken' },
+  'amina|jonas': { what:'Photo walk', when:'Sat 12:00 · Bjørvika' },
+};
 
 const phones = document.getElementById('phones');
 const ledger = document.getElementById('ledger');
 const agentMsg = document.getElementById('agentMsg');
+const btnAfter = document.getElementById('btnAfter');
+const btnAuto = document.getElementById('btnAuto');
 
 function log(text, hidden=false) {
   const li = document.createElement('li');
@@ -135,6 +163,10 @@ function log(text, hidden=false) {
 
 function yesCount() { return Object.values(answers).filter(v => v === true).length; }
 function noCount() { return Object.values(answers).filter(v => v === false).length; }
+function went() { return PEOPLE.filter(q => answers[q.id] === true); }
+function pairKey(a, b) { return [a, b].sort().join('|'); }
+function mutual(a, b) { return (picks[a] || []).includes(b) && (picks[b] || []).includes(a); }
+function allPicked() { return went().every(q => picks[q.id] !== undefined); }
 
 function render() {
   phones.innerHTML = '';
@@ -143,7 +175,13 @@ function render() {
     el.className = 'phone' + (p.you ? ' you' : '');
     const a = answers[p.id];
     let body;
-    if (isOn && a === true) body = onScreen(p);
+    if (phase === 'after') {
+      if (a !== true) body = notThereScreen(p);
+      else if (allPicked()) body = nextScreen(p);
+      else if (picks[p.id] !== undefined) body = pickedWaitScreen(p);
+      else body = afterScreen(p);
+    }
+    else if (isOn && a === true) body = onScreen(p);
     else if (a === true && isDropped) body = droppedScreen(p);
     else if (a === true) body = waitScreen(p);
     else if (a === false) body = noScreen(p);
@@ -155,10 +193,33 @@ function render() {
     phones.appendChild(el);
   });
   phones.querySelectorAll('button[data-id]').forEach(b => b.onclick = () => decide(b.dataset.id, b.dataset.ok === '1'));
+  phones.querySelectorAll('button[data-pick]').forEach(b => b.onclick = () => togglePick(b.dataset.me, b.dataset.pick, b));
+  phones.querySelectorAll('button[data-send]').forEach(b => b.onclick = () => sendPicks(b.dataset.send));
+
+  btnAfter.disabled = !(isOn && phase === 'ask');
+  btnAuto.textContent = phase === 'after' ? 'Let the others pick' : 'Let the others answer';
+
   const y = yesCount(), n = noCount(), asked = PEOPLE.length - y - n;
-  if (isOn) agentMsg.textContent = `It's on. ${y} said yes, so Nabo told those ${y} it's happening and who's coming. ${n ? `${n} said no and ${n === 1 ? 'is' : 'are'} simply not mentioned.` : ''}`;
+  if (phase === 'after') {
+    if (allPicked()) {
+      const pairs = mutualPairs();
+      agentMsg.textContent = pairs.length
+        ? `${pairs.length} mutual pick${pairs.length > 1 ? 's' : ''}. Nabo proposes something to each pair, as if it were its own idea. Picks that were not mutual are never mentioned to anyone.`
+        : `No mutual picks. Nobody is told. Nabo keeps proposing groups.`;
+    } else agentMsg.textContent = `Saturday morning. Nabo asks the ${y} who went who they'd like to see again. A pick is only revealed if it is mutual.`;
+  }
+  else if (isOn) agentMsg.textContent = `It's on. ${y} said yes, so Nabo told those ${y} it's happening and who's coming. ${n ? `${n} said no and ${n === 1 ? 'is' : 'are'} simply not mentioned.` : ''}`;
+  else if (isDropped) agentMsg.textContent = `Only ${y} said yes, needs ${EVENT.need}. Nabo drops it quietly. Nobody is told who said what, and nobody feels rejected.`;
   else if (asked === PEOPLE.length) agentMsg.textContent = `Asked all 4 the same way at the same time. Needs ${EVENT.need} yes to happen. Nobody is told what the others answered.`;
   else agentMsg.textContent = `${y} yes, ${n} no, ${asked} not answered yet. Still needs ${Math.max(0, EVENT.need - y)} more yes. Nobody is told this but you, the audience.`;
+}
+
+function mutualPairs() {
+  const out = [];
+  const g = went();
+  for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++)
+    if (mutual(g[i].id, g[j].id)) out.push([g[i].id, g[j].id]);
+  return out;
 }
 
 function cardScreen(p) {
@@ -203,7 +264,7 @@ function missedScreen(p) {
 }
 
 function onScreen(p) {
-  const going = PEOPLE.filter(q => answers[q.id] === true);
+  const going = went();
   return `<div class="on">
     <div class="head"><b>Friday is on 🎷</b><span>${EVENT.when} · ${going.length} of you</span></div>
     <h4>Who's going</h4>
@@ -212,42 +273,120 @@ function onScreen(p) {
   </div>`;
 }
 
+// ---- the morning after ----
+
+function notThereScreen(p) {
+  return `<div class="state"><div class="dot"></div>
+    <h3>Nothing new</h3>
+    <p>${p.name} wasn't there and isn't asked. Nabo will try something else another week.</p></div>`;
+}
+
+function afterScreen(p) {
+  const others = went().filter(q => q.id !== p.id);
+  return `<div class="on">
+    <div class="head" style="background:var(--accent)"><b>How was Friday?</b><span>Who would you like to see again?</span></div>
+    <h4>You went with</h4>
+    ${others.map(q => `<div class="pick"><div class="av" style="background:${q.color}">${q.name[0]}</div><div class="nm">${q.name}<small>${q.bits[1]}</small></div><button data-me="${p.id}" data-pick="${q.id}">See again</button></div>`).join('')}
+    <div class="fine">${p.name}, nobody sees your answer unless they picked you too. Picking no one is fine.</div>
+    <button class="send" data-send="${p.id}">Done</button>
+  </div>`;
+}
+
+function pickedWaitScreen(p) {
+  const n = (picks[p.id] || []).length;
+  return `<div class="state"><div class="dot wait"></div>
+    <h3>Noted</h3>
+    <p>You picked ${n === 0 ? 'no one' : n === 1 ? 'one person' : n + ' people'}. They don't know. If someone picked you too, Nabo will propose something to both of you, as if it were Nabo's idea.</p></div>`;
+}
+
+function nextScreen(p) {
+  const mine = went().filter(q => q.id !== p.id && mutual(p.id, q.id));
+  if (!mine.length) return `<div class="state"><div class="dot"></div>
+    <h3>Nothing yet</h3>
+    <p>No mutual pick this time. Nobody knows who you picked, or whether anyone picked you. Nabo keeps proposing groups.</p></div>`;
+  return `<div class="on">
+    <h4>New from Nabo</h4>
+    ${mine.map(q => { const plan = PAIR_PLANS[pairKey(p.id, q.id)] || { what:'Coffee', when:'Tue 17:30' };
+      return `<div class="next"><div class="tag">You both picked each other</div><h2>${plan.what} with ${q.name}</h2><div class="when">${plan.when}</div>
+      <div class="why">${q.name} would like to see you again too. Nabo proposes this to both of you at once, as its own idea. A no is still private.</div></div>`; }).join('')}
+    <div class="fine">Anyone you picked who didn't pick you is not mentioned, and never learns you picked them.</div>
+  </div>`;
+}
+
+function togglePick(me, other, btn) {
+  if (picks[me] !== undefined) return;
+  btn.classList.toggle('sel');
+  btn.textContent = btn.classList.contains('sel') ? 'See again ✓' : 'See again';
+}
+
+function sendPicks(me) {
+  if (picks[me] !== undefined) return;
+  const sel = [...phones.querySelectorAll(`button[data-me="${me}"].sel`)].map(b => b.dataset.pick);
+  setPicks(me, sel);
+}
+
+function setPicks(me, ids) {
+  if (picks[me] !== undefined) return;
+  picks[me] = ids;
+  const p = PEOPLE.find(x => x.id === me);
+  const names = ids.map(i => PEOPLE.find(x => x.id === i).name);
+  log(`${p.name} picked ${names.length ? names.join(' and ') : 'no one'}. Nabo told nobody.`, true);
+  if (allPicked()) {
+    mutualPairs().forEach(([a, b]) => {
+      const A = PEOPLE.find(x => x.id === a).name, B = PEOPLE.find(x => x.id === b).name;
+      const plan = PAIR_PLANS[pairKey(a, b)];
+      log(`${A} and ${B} picked each other. Nabo proposes "${plan ? plan.what : 'Coffee'}, ${plan ? plan.when : 'Tue 17:30'}" to both, as its own idea.`);
+    });
+    went().forEach(q => (picks[q.id] || []).forEach(o => { if (!mutual(q.id, o)) log(`${q.name} picked ${PEOPLE.find(x => x.id === o).name}, not mutual. Neither is told.`, true); }));
+  }
+  render();
+}
+
 function decide(id, ok) {
-  if (answers[id] !== undefined || isOn) return;
+  if (answers[id] !== undefined || isOn || phase !== 'ask') return;
   answers[id] = ok;
   const p = PEOPLE.find(x => x.id === id);
   log(`${p.name} said ${ok ? 'yes' : 'no'}. Nabo told nobody.`, true);
-  if (yesCount() >= EVENT.need && Object.keys(answers).length === PEOPLE.length) turnOn();
-  else if (yesCount() >= EVENT.need && noCount() + yesCount() === PEOPLE.length) turnOn();
-  render();
-  if (!isOn && Object.keys(answers).length === PEOPLE.length && yesCount() < EVENT.need) {
+  if (yesCount() >= EVENT.need && noCount() + yesCount() === PEOPLE.length) turnOn();
+  else if (Object.keys(answers).length === PEOPLE.length && yesCount() < EVENT.need) {
     isDropped = true;
-    log(`To ${PEOPLE.filter(q => answers[q.id] === true).map(q => q.name).join(' and ')}: "Not this Friday, not enough could make it." Nobody is named.`);
-    render();
-    agentMsg.textContent = `Only ${yesCount()} said yes, needs ${EVENT.need}. Nabo drops it quietly. Nobody is told who said what, and nobody feels rejected.`;
+    log(`To ${went().map(q => q.name).join(' and ')}: "Not this Friday, not enough could make it." Nobody is named.`);
   }
+  render();
 }
 
 function turnOn() {
   isOn = true;
-  const going = PEOPLE.filter(q => answers[q.id] === true).map(q => q.name);
+  const going = went().map(q => q.name);
   log(`To ${going.join(', ')}: "Friday is on. Here's who's coming." Sent to all ${going.length} at once.`);
   PEOPLE.filter(q => answers[q.id] === false).forEach(q => log(`To ${q.name}: nothing. They are not mentioned to the others.`, true));
 }
 
+function morningAfter() {
+  if (!isOn) return;
+  phase = 'after';
+  log(`Saturday 10:00. To ${went().map(q => q.name).join(', ')}: "How was Friday? Who would you like to see again?" Answers are private.`);
+  render();
+}
+
 function auto() {
   timers.forEach(clearTimeout); timers = [];
-  SCRIPT.forEach(s => { if (answers[s.id] === undefined) timers.push(setTimeout(() => decide(s.id, s.ok), s.t)); });
+  if (phase === 'after') {
+    AFTER_SCRIPT.forEach(s => { if (answers[s.id] === true && picks[s.id] === undefined) timers.push(setTimeout(() => setPicks(s.id, s.ids.filter(i => answers[i] === true)), s.t)); });
+  } else {
+    SCRIPT.forEach(s => { if (answers[s.id] === undefined) timers.push(setTimeout(() => decide(s.id, s.ok), s.t)); });
+  }
 }
 
 function reset() {
   timers.forEach(clearTimeout); timers = [];
-  answers = {}; isOn = false; isDropped = false; ledger.innerHTML = '';
+  answers = {}; isOn = false; isDropped = false; phase = 'ask'; picks = {}; ledger.innerHTML = '';
   log('Proposed "Live jazz, then a drink, Fri 20:00" to Jonas, Sara, Erik and Amina. Same message to each, nobody named as the initiator.');
   render();
 }
 
-document.getElementById('btnAuto').onclick = auto;
+btnAuto.onclick = auto;
+btnAfter.onclick = morningAfter;
 document.getElementById('btnReset').onclick = reset;
 reset();
 </script>
