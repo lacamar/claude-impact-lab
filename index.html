@@ -863,6 +863,235 @@
     flex-wrap: wrap;
     gap: 12px;
   }
+  /* Auto-Arrange Engine & Group Chat Comparison */
+  .nav-btn.auto-arrange-btn {
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .nav-btn.auto-arrange-btn:hover {
+    background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45);
+  }
+
+  .modal-window.auto-arrange-window {
+    max-width: 860px;
+    width: 95vw;
+  }
+
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 10px;
+  }
+  @media (max-width: 768px) {
+    .comparison-grid { grid-template-columns: 1fr; }
+  }
+
+  .comparison-col {
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .col-purgatory {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+  }
+  .col-handshake {
+    background: #090e17;
+    border: 1px solid #1e293b;
+    color: #e2e8f0;
+  }
+
+  .col-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  .col-handshake .col-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+  .col-title {
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .col-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .col-badge.danger {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+  .col-badge.success {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+  }
+
+  /* Chat Simulator */
+  .chat-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 4px;
+  }
+  .chat-bubble {
+    max-width: 84%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.35;
+    position: relative;
+  }
+  .chat-bubble.them {
+    align-self: flex-start;
+    background: #ffffff;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+    border-bottom-left-radius: 4px;
+  }
+  .chat-bubble.me {
+    align-self: flex-end;
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+    border-bottom-right-radius: 4px;
+  }
+  .chat-author {
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 2px;
+  }
+  .chat-time {
+    font-size: 9.5px;
+    color: #94a3b8;
+    margin-top: 4px;
+    text-align: right;
+  }
+
+  .pain-stats {
+    background: #ffffff;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #9a3412;
+    line-height: 1.4;
+  }
+
+  /* Agent Handshake Column */
+  .handshake-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 14px;
+  }
+  .handshake-step {
+    background: #111827;
+    border: 1px solid #1f293d;
+    border-radius: 8px;
+    padding: 9px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    transition: all 0.25s;
+  }
+  .handshake-step.active {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+  }
+  .handshake-step.done {
+    border-color: #4ade80;
+    background: rgba(74, 222, 128, 0.08);
+  }
+  .step-icon {
+    font-size: 15px;
+    margin-top: 1px;
+  }
+  .step-text {
+    flex: 1;
+  }
+  .step-name {
+    font-weight: 700;
+    color: #f1f5f9;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    margin-bottom: 2px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .step-desc {
+    color: #94a3b8;
+    font-size: 11.5px;
+    line-height: 1.3;
+  }
+  .step-latency {
+    font-family: 'JetBrains Mono', monospace;
+    color: #38bdf8;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .handshake-stats {
+    background: #111827;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #4ade80;
+    line-height: 1.4;
+  }
+
+  .run-handshake-btn {
+    width: 100%;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    transition: all 0.2s;
+    margin-top: 12px;
+  }
+  .run-handshake-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+  }
+  .run-handshake-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 </style>
 </head>
 <body>
@@ -878,6 +1107,9 @@
   </div>
 
   <div class="nav-controls">
+    <button class="nav-btn auto-arrange-btn" onclick="openAutoArrangeModal()" title="See how autonomous agents eliminate group chat pain">
+      <span>⚡</span> Auto-Arrange (Kill Group Chat)
+    </button>
     <button class="nav-btn primary" onclick="openIntakeModal()">
       <span>＋</span> Add Intent / Contact
     </button>
@@ -1049,6 +1281,146 @@
     <div class="modal-footer">
       <button class="nav-btn" onclick="closeIntakeModal()">Cancel</button>
       <button class="nav-btn primary" onclick="submitIntake()">Dispatch to Nabo Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Auto-Arrange Engine (Group Chat Purgatory vs Autonomous Agent Handshake) -->
+<div class="modal-overlay" id="autoArrangeModal">
+  <div class="modal-window auto-arrange-window">
+    <div class="modal-top">
+      <div>
+        <h3 style="display:flex; align-items:center; gap:8px;">
+          <span>⚡</span> Autonomous Arrangement Engine
+        </h3>
+        <p style="font-size:12px; color:var(--ink-light); margin-top:2px;">
+          Why do plans fail? People give up on the draining back-and-forth coordination. Watch agents absorb the friction.
+        </p>
+      </div>
+      <button class="modal-close" onclick="closeAutoArrangeModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="comparison-grid">
+        
+        <!-- Left: The Human Drain (Group Chat Purgatory) -->
+        <div class="comparison-col col-purgatory">
+          <div>
+            <div class="col-header">
+              <div class="col-title">💀 Group Chat Purgatory</div>
+              <span class="col-badge danger">68% Drop-Off</span>
+            </div>
+            
+            <div class="chat-stream">
+              <div class="chat-bubble them">
+                <div class="chat-author">Alex M.</div>
+                Hey! We promised coffee last month. Let's actually do it this week!
+                <div class="chat-time">Mon 10:14</div>
+              </div>
+              <div class="chat-bubble me">
+                <div class="chat-author">Jonas (You)</div>
+                Yes! I can do Tuesday after 18:00, or maybe Thursday?
+                <div class="chat-time">Mon 16:30</div>
+              </div>
+              <div class="chat-bubble them">
+                <div class="chat-author">Alex M.</div>
+                Ah Tuesday I have climbing, and Thursday is my sister's birthday 😭 How about Friday afternoon?
+                <div class="chat-time">Tue 09:12</div>
+              </div>
+              <div class="chat-bubble me">
+                <div class="chat-author">Jonas (You)</div>
+                Friday traveling to Bergen. Next Monday?
+                <div class="chat-time">Tue 19:45</div>
+              </div>
+              <div class="chat-bubble them">
+                <div class="chat-author">Alex M.</div>
+                Bump! Is Monday still good? What time / where?
+                <div class="chat-time">Thu 11:20</div>
+              </div>
+              <div class="chat-bubble me">
+                <div class="chat-author">Jonas (You)</div>
+                Sorry crazy week! Let's just push to next month...
+                <div class="chat-time">Sun 22:15</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="pain-stats">
+            <strong>The Coordination Tax:</strong><br>
+            • 18 back-and-forth messages across 6 days<br>
+            • High cognitive load, calendar conflicts & awkwardness<br>
+            • <strong>Outcome:</strong> Abandoned plan & lingering guilt
+          </div>
+        </div>
+
+        <!-- Right: Nabo Autonomous Agent Handshake -->
+        <div class="comparison-col col-handshake">
+          <div>
+            <div class="col-header">
+              <div class="col-title">⚡ Autonomous Multi-Agent Protocol</div>
+              <span class="col-badge success">420ms Latency</span>
+            </div>
+
+            <div class="handshake-steps" id="handshakeSteps">
+              <div class="handshake-step" id="step1">
+                <div class="step-icon">🔒</div>
+                <div class="step-text">
+                  <div class="step-name">
+                    <span>1. Ingest Private Constraints</span>
+                    <span class="step-latency">+45ms</span>
+                  </div>
+                  <div class="step-desc">Jonas: Free Thu 18:00+, Grünerløkka / Oslo S, quiet brew intent.</div>
+                </div>
+              </div>
+
+              <div class="handshake-step" id="step2">
+                <div class="step-icon">🤝</div>
+                <div class="step-text">
+                  <div class="step-name">
+                    <span>2. Private Set Intersection (PSI)</span>
+                    <span class="step-latency">+120ms</span>
+                  </div>
+                  <div class="step-desc">Intersects with Alex proxy. Zero raw calendar leakage. Found: Thu 18:30.</div>
+                </div>
+              </div>
+
+              <div class="handshake-step" id="step3">
+                <div class="step-icon">📍</div>
+                <div class="step-text">
+                  <div class="step-name">
+                    <span>3. Transit & Venue Midpoint Solver</span>
+                    <span class="step-latency">+185ms</span>
+                  </div>
+                  <div class="step-desc">Resolved: Fuglen Gamlebyen (7-min transit radius for both).</div>
+                </div>
+              </div>
+
+              <div class="handshake-step" id="step4">
+                <div class="step-icon">🛡️</div>
+                <div class="step-text">
+                  <div class="step-name">
+                    <span>4. Zero-Friction Social Shield</span>
+                    <span class="step-latency">+70ms</span>
+                  </div>
+                  <div class="step-desc">Single-tap invite generated. Private decline enabled. 0 messages sent.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="handshake-stats" id="handshakeStatsText">
+            <strong>The Agent Advantage:</strong><br>
+            • 0 messages required between humans<br>
+            • 100% of logistical drain absorbed autonomously<br>
+            • Ready for 1-tap calendar booking (.ics export)
+          </div>
+        </div>
+
+      </div>
+
+      <button class="run-handshake-btn" id="btnRunHandshake" onclick="runLiveNegotiation()">
+        <span>🚀</span> Run Live Autonomous Negotiation (Watch Agents Solve Friction)
+      </button>
     </div>
   </div>
 </div>
@@ -1615,6 +1987,116 @@ function toggleAffinity(eventId, attendeeIdx) {
     logTelemetry('AFFINITY REMOVED', 'tag-match', `Recurrence priority cleared for ${att.name}.`);
   }
   renderPastEvents();
+}
+
+// Auto-Arrange Engine & Live Multi-Agent Negotiation
+function openAutoArrangeModal() {
+  document.getElementById('autoArrangeModal').classList.add('open');
+  resetHandshakeUI();
+}
+
+function closeAutoArrangeModal() {
+  document.getElementById('autoArrangeModal').classList.remove('open');
+}
+
+function resetHandshakeUI() {
+  const steps = ['step1', 'step2', 'step3', 'step4'];
+  steps.forEach(s => {
+    const el = document.getElementById(s);
+    if (el) {
+      el.classList.remove('active', 'done');
+    }
+  });
+  const btn = document.getElementById('btnRunHandshake');
+  if (btn) {
+    btn.disabled = false;
+    btn.style.background = '';
+    btn.innerHTML = `<span>🚀</span> Run Live Autonomous Negotiation (Watch Agents Solve Friction)`;
+  }
+}
+
+let isNegotiating = false;
+function runLiveNegotiation() {
+  if (isNegotiating) return;
+  isNegotiating = true;
+
+  const btn = document.getElementById('btnRunHandshake');
+  btn.disabled = true;
+  btn.innerHTML = `<span>⚙️</span> Autonomous Agents Negotiating Constraints...`;
+
+  const s1 = document.getElementById('step1');
+  const s2 = document.getElementById('step2');
+  const s3 = document.getElementById('step3');
+  const s4 = document.getElementById('step4');
+
+  // Step 1: Constraint Ingestion
+  s1.classList.add('active');
+  logTelemetry('PSI_INGEST', 'tag-ai', 'Ingesting Jonas local encrypted vector: [availability: Thu 18:00+, radius: 3km, intent: "coffee"]', true);
+
+  setTimeout(() => {
+    // Step 2: Private Set Intersection
+    s1.classList.remove('active');
+    s1.classList.add('done');
+    s2.classList.add('active');
+    logTelemetry('P2P_HANDSHAKE', 'tag-coord', 'Private Set Intersection with Alex proxy. Zero calendar events exchanged. Overlap: Thu 18:30..19:30.');
+
+    setTimeout(() => {
+      // Step 3: Midpoint & Venue Solver
+      s2.classList.remove('active');
+      s2.classList.add('done');
+      s3.classList.add('active');
+      logTelemetry('GEO_SOLVER', 'tag-match', 'Transit midpoint solved: Fuglen Gamlebyen (Line 3/19 direct for both). Weather forecast dry.');
+
+      setTimeout(() => {
+        // Step 4: Proposal Synthesized
+        s3.classList.remove('active');
+        s3.classList.add('done');
+        s4.classList.add('active');
+        s4.classList.add('done');
+        logTelemetry('PROPOSAL_MINTED', 'tag-cal', 'Autonomous match locked. 0 human messages required. Prepared RFC-5545 calendar payload.');
+
+        // Synthesize new proposal card and inject into Jonas's deck
+        const p = state.personas.jonas;
+        const autoProp = {
+          id: 'prop-auto-' + Date.now(),
+          tag: '⚡ Auto-Arranged (0 Chat)',
+          tagClass: 'match',
+          title: 'Specialty Coffee at Fuglen with Alex M.',
+          when: 'Thu 18:30 · Fuglen Gamlebyen',
+          why: 'Jonas and Alex had "coffee sometime" pending. Agents intersected calendars (Thu 18:30), solved transit midpoint (Line 3 at Fuglen), and prepared this 1-tap invite without any group chat ping-pong.',
+          attendees: ['A'],
+          attendeeNames: ['Alex M.'],
+          isOrg: false,
+          canBuddy: true
+        };
+
+        p.proposals.unshift(autoProp);
+        state.stats.initiations++;
+        saveState();
+
+        btn.innerHTML = `<span>✓</span> Arranged in 418ms! (Card Added to Deck)`;
+        btn.style.background = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+
+        setTimeout(() => {
+          closeAutoArrangeModal();
+          isNegotiating = false;
+          setPersona('jonas');
+          switchTab('proposals');
+          renderCards();
+          renderConsole();
+          showToast('⚡ Hangout arranged in 418ms! Tap ✓ to confirm.');
+
+          // Subtle visual highlight on top card
+          const topCard = document.querySelector('.proposal-card');
+          if (topCard) {
+            topCard.style.boxShadow = '0 0 25px rgba(217, 119, 6, 0.45), 0 16px 36px -12px rgba(28, 25, 23, 0.2)';
+            topCard.style.borderColor = 'var(--accent)';
+          }
+        }, 800);
+
+      }, 400);
+    }, 400);
+  }, 350);
 }
 
 // Intake Modal
