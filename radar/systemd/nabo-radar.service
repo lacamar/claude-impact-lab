@@ -1,0 +1,10 @@
+[Unit]
+Description=Collect and tag Oslo events for Nabo
+Wants=network-online.target llama-server.service
+After=network-online.target llama-server.service
+
+[Service]
+Type=oneshot
+Environment=NABO_RADAR_LLM_WAIT=600
+ExecStart=/usr/bin/nabo-radar run
+Nice=10
