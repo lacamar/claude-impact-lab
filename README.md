@@ -37,3 +37,10 @@ An agent does the asking. Nobody initiates, nobody is turned down in public, and
 - [`BRIEF.md`](BRIEF.md), [`CLAUDE.md`](CLAUDE.md): the event brief and instructions for Claude
 
 All people in the prototype are made up.
+
+## Team
+
+- [Martin A Kraft](https://www.linkedin.com/in/martin-a-kraft-963b9614b/)
+- [Lachlan Marie](https://www.linkedin.com/in/lachlan-marie/)
+- [Andreas Aagård](https://www.linkedin.com/in/andreas-aag%C3%A5rd/)
+- [Kirill Izmikov](https://www.linkedin.com/in/kirillizmikov/)
